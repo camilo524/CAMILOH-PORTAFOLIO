@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entra a la Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  :root{
+    --neon: #00ff8c;
+    --neon-dim: #00b866;
+    --neon-glow: rgba(0,255,140,0.55);
+    --red: #ff2d4d;
+    --red-glow: rgba(255,45,77,0.55);
+    --blue: #1fb6ff;
+    --blue-glow: rgba(31,182,255,0.55);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0;
+    width:100%; height:100%;
+    background:#000;
+    overflow:hidden;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  #rain{
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    display:block;
+    cursor: crosshair;
+  }
+
+  #vignette{
+    position:fixed; inset:0;
+    pointer-events:none;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.88) 100%);
+    z-index: 2;
+  }
+
+  #grid-overlay{
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index: 2;
+    background-image:
+      linear-gradient(rgba(0,255,140,.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,140,.02) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  /* ---------- Tarjeta horizontal ---------- */
+  #card-outer{
+    position:fixed;
+    top:50%; left:50%;
+    transform: translate(-50%, -48%) scale(0.85);
+    z-index: 10;
+    width: min(640px, 94vw);
+    border-radius: 26px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--neon), transparent 45%, var(--blue));
+    animation: border-pulse 2.4s ease-in-out infinite alternate;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.9,.25,1);
+    box-shadow: 0 0 60px 10px var(--neon-glow), 0 0 140px 40px rgba(0,255,140,0.15);
+  }
+  #card-outer.show{
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+  }
+  @keyframes border-pulse{
+    0%{ filter: brightness(0.8); }
+    100%{ filter: brightness(1.3); }
+  }
+
+  #card{
+    position:relative;
+    overflow:hidden;
+    border-radius: 25px;
+    padding: 34px 34px 24px;
+    color: #eafff2;
+    background: rgba(5, 14, 10, 0.55);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+
+  #card::before{
+    content:'';
+    position:absolute;
+    left:0; right:0; top:-4px;
+    height:2px;
+    background: linear-gradient(90deg, transparent, rgba(0,255,140,.9), rgba(140,255,220,.9), rgba(0,255,140,.9), transparent);
+    animation: scan 3.2s linear infinite;
+    z-index: 5;
+    pointer-events:none;
+  }
+  @keyframes scan{
+    0%{ top:-4px; }
+    100%{ top: 100%; }
+  }
+
+  .corner{
+    position:absolute;
+    width:16px; height:16px;
+    z-index:6;
+    pointer-events:none;
+  }
+  .corner.tl{ top:10px; left:10px; border-top:2px solid var(--neon); border-left:2px solid var(--neon); }
+  .corner.tr{ top:10px; right:10px; border-top:2px solid var(--neon); border-right:2px solid var(--neon); }
+  .corner.bl{ bottom:10px; left:10px; border-bottom:2px solid var(--neon); border-left:2px solid var(--neon); }
+  .corner.br{ bottom:10px; right:10px; border-bottom:2px solid var(--neon); border-right:2px solid var(--neon); }
+
+  #status-badge{
+    position:absolute;
+    top: -14px; left:50%;
+    transform: translateX(-50%);
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    background: rgba(3,10,7,.85);
+    border: 1px solid rgba(0,255,140,.5);
+    color: var(--neon);
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 999px;
+    z-index: 7;
+    text-shadow: 0 0 8px var(--neon-glow);
+  }
+  #status-badge .dot{
+    width:6px; height:6px;
+    border-radius:50%;
+    background: var(--neon);
+    box-shadow: 0 0 8px var(--neon);
+    animation: blink 1.1s ease-in-out infinite;
+  }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.15;} }
+
+  /* ---------- Fila principal: logo + info ---------- */
+  .panel-row{
+    display:flex;
+    align-items:center;
+    gap: 26px;
+    margin-top: 10px;
+  }
+
+  #guild-icon-wrap{
+    flex: 0 0 auto;
+    width: 108px; height: 108px;
+    border-radius: 20px;
+    padding: 3px;
+    background: linear-gradient(160deg, var(--neon), rgba(0,60,34,.6));
+    box-shadow: 0 0 24px var(--neon-glow);
+    animation: icon-breathe 2.6s ease-in-out infinite;
+  }
+  @keyframes icon-breathe{
+    0%,100%{ box-shadow: 0 0 18px var(--neon-glow); }
+    50%{ box-shadow: 0 0 34px var(--neon-glow); }
+  }
+  #guild-icon{
+    width:100%; height:100%;
+    border-radius: 17px;
+    object-fit: cover;
+    display:block;
+    background:#0a0f0c;
+  }
+
+  .panel-info{
+    flex: 1 1 auto;
+    text-align: left;
+    min-width: 0;
+  }
+
+  #guild-name{
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: clamp(20px, 4vw, 27px);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon);
+    text-shadow: 0 0 10px var(--neon-glow), 0 0 22px var(--neon-glow);
+    margin: 0 0 10px;
+    line-height: 1.1;
+  }
+
+  #tagline{
+    font-family: 'Share Tech Mono', monospace;
+    font-size: clamp(13px, 2vw, 15px);
+    line-height: 1.5;
+    margin: 0 0 20px;
+    color: var(--neon);
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 8px var(--neon-glow);
+    animation: tglitch 7s ease-in-out infinite;
+  }
+  @keyframes tglitch{
+    0%,88%,100%{ text-shadow: 0 0 8px var(--neon-glow); transform: translate(0); }
+    89%{ text-shadow: 2px 0 0 rgba(255,45,77,.7), -2px 0 0 rgba(31,182,255,.7); transform: translate(-1px,0); }
+    90%{ text-shadow: -2px 0 0 rgba(255,45,77,.6), 2px 0 0 rgba(31,182,255,.6); transform: translate(1px,0); }
+    91%{ text-shadow: 0 0 8px var(--neon-glow); transform: translate(0); }
+  }
+
+  /* ---------- Pildoras (glassmorphism con tinte de color) ---------- */
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    letter-spacing: 2px;
+    font-size: 14px;
+    text-decoration:none;
+    border-radius: 999px;
+    padding: 13px 32px;
+    cursor: pointer;
+    will-change: transform;
+    user-select:none;
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+
+  #join-btn{
+    color: #ffe3e8;
+    background: rgba(255, 45, 77, 0.22);
+    border: 1px solid rgba(255, 110, 130, 0.55);
+    box-shadow: 0 0 18px var(--red-glow), inset 0 1px 1px rgba(255,255,255,0.25), 0 4px 16px rgba(255,45,77,0.2);
+  }
+
+  #exit-btn{
+    position: fixed;
+    top: 22px; right: 22px;
+    z-index: 20;
+    color: #e3f7ff;
+    padding: 10px 24px;
+    font-size: 12px;
+    background: rgba(31, 182, 255, 0.22);
+    border: 1px solid rgba(120, 210, 255, 0.55);
+    box-shadow: 0 0 16px var(--blue-glow), 0 0 26px 4px var(--neon-glow), inset 0 1px 1px rgba(255,255,255,0.22);
+    opacity: 0;
+    transition: opacity 1s ease .3s, filter .25s ease;
+  }
+  #exit-btn.show{ opacity: 1; }
+
+  /* ---------- Join server (centro inferior del panel) ---------- */
+  #join-server{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    margin-top: 22px;
+    color: var(--neon);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px var(--neon-glow);
+  }
+  #join-server svg{
+    width:14px; height:14px;
+    filter: drop-shadow(0 0 4px var(--neon-glow));
+  }
+
+  /* ---------- Hint & credito ---------- */
+  #hint{
+    position: fixed;
+    bottom: 18px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    color: var(--neon-dim);
+    font-size: 11px;
+    letter-spacing: 2px;
+    opacity: 0;
+    text-shadow: 0 0 6px var(--neon-glow);
+    transition: opacity 1.5s ease 1.8s;
+    pointer-events: none;
+  }
+  #hint.show{ opacity: 0.65; }
+
+  #credit{
+    position: fixed;
+    bottom: 16px; left: 20px;
+    z-index: 10;
+    color: rgba(0,255,140,0.5);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 6px rgba(0,255,140,0.3);
+    pointer-events:none;
+  }
+
+  @media (max-width: 560px){
+    .panel-row{ flex-direction: column; text-align:center; }
+    .panel-info{ text-align:center; }
+    #guild-icon-wrap{ width:88px; height:88px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="rain"></canvas>
+<div id="grid-overlay"></div>
+<div id="vignette"></div>
+
+<a id="exit-btn" class="pill" href="index.html">SALIR</a>
+
+<div id="card-outer">
+  <div id="status-badge"><span class="dot"></span>CONEXIÓN_ESTABLECIDA</div>
+  <div id="card">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="panel-row">
+      <div id="guild-icon-wrap">
+        <img id="guild-icon" src="assets/discord_logo.jpg" alt="Logo del servidor">
+      </div>
+      <div class="panel-info">
+        <h1 id="guild-name">URIM Y TUMIM</h1>
+        <div id="tagline">TOMA LA PÍLDORA. DESCUBRE LA MATRIX.</div>
+        <a id="join-btn" class="pill" href="https://discord.gg/Kg8fJe7FP" target="_blank" rel="noopener noreferrer">UNIRSE</a>
+      </div>
+    </div>
+
+    <div id="join-server">
+      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.317 4.369A19.79 19.79 0 0 0 15.885 3c-.211.375-.457.878-.63 1.28a18.27 18.27 0 0 0-5.51 0A12.6 12.6 0 0 0 9.115 3 19.74 19.74 0 0 0 4.68 4.372C1.885 8.462 1.13 12.45 1.508 16.38a19.9 19.9 0 0 0 5.993 2.99c.483-.65.914-1.34 1.285-2.066a12.9 12.9 0 0 1-2.023-.955c.17-.123.336-.252.497-.384 3.9 1.784 8.13 1.784 11.98 0 .163.132.33.261.497.384-.646.386-1.323.71-2.027.957.372.727.802 1.416 1.285 2.066a19.87 19.87 0 0 0 6-2.99c.44-4.545-.762-8.5-3.678-12.012ZM8.68 13.98c-1.174 0-2.14-1.062-2.14-2.366 0-1.303.945-2.367 2.14-2.367 1.204 0 2.16 1.073 2.14 2.367 0 1.304-.945 2.366-2.14 2.366Zm6.64 0c-1.174 0-2.14-1.062-2.14-2.366 0-1.303.946-2.367 2.14-2.367 1.204 0 2.16 1.073 2.14 2.367 0 1.304-.936 2.366-2.14 2.366Z"/>
+      </svg>
+      Join Server By Camiloh
+    </div>
+  </div>
+</div>
+
+<div id="hint">HAZ CLIC EN EL CÓDIGO</div>
+<div id="credit">© 2026 Camiloh — Artista 3D</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= CANVAS SETUP ================= */
+  const canvas = document.getElementById('rain');
+  const ctx = canvas.getContext('2d');
+  let W, H, FONT_SIZE = 20, numCols;
+  let cols = [];
+  let charCache = [];
+
+  function r(a,b){ return Math.random()*(b-a)+a; }
+
+  function getChar(){
+    const ranges = [ [0x30A0,0x30FF], [0x0030,0x0039], [0x0041,0x005A] ];
+    const set = ranges[(Math.random()*ranges.length)|0];
+    return String.fromCharCode(Math.floor(r(set[0], set[1])));
+  }
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    numCols = Math.floor(W / FONT_SIZE);
+    const oldCols = cols;
+    cols = new Array(numCols);
+    charCache = new Array(numCols);
+    for(let i=0;i<numCols;i++){
+      charCache[i] = {};
+      if(oldCols && oldCols[i]){
+        cols[i] = oldCols[i];
+      } else {
+        cols[i] = {
+          head: -r(0, H/FONT_SIZE),
+          delay: r(45,130),
+          last: performance.now() - r(0,500),
+          trailSize: Math.floor(r(14,30))
+        };
+      }
+    }
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  /* --------- efectos interactivos (clicks) --------- */
+  let ripples = [];
+  let bursts  = [];
+
+  canvas.addEventListener('click', (e)=>{
+    const x = e.clientX, y = e.clientY;
+    ripples.push({ x, y, r: 4, alpha: 1 });
+
+    const n = 22;
+    for(let i=0;i<n;i++){
+      const angle = Math.random()*Math.PI*2;
+      const speed = 1 + Math.random()*3.4;
+      bursts.push({
+        x, y,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed,
+        life: 1,
+        ch: getChar(),
+        size: FONT_SIZE * (0.6 + Math.random()*0.8)
+      });
+    }
+
+    const col = Math.round(x / FONT_SIZE);
+    for(let dc=-2; dc<=2; dc++){
+      const c = col+dc;
+      if(c>=0 && c<numCols){
+        cols[c].head = y/FONT_SIZE;
+        cols[c].delay = r(30,60);
+      }
+    }
+  });
+
+  /* ================= LOOP DE DIBUJO ================= */
+  const RAIN_FONT = `${FONT_SIZE}px monospace`;
+
+  function draw(now){
+    ctx.fillStyle = 'rgba(0,0,0,0.16)';
+    ctx.fillRect(0,0,W,H);
+    ctx.font = RAIN_FONT;
+    ctx.textBaseline = 'top';
+    ctx.shadowBlur = 0;
+
+    for(let c=0;c<numCols;c++){
+      const col = cols[c];
+
+      if(now - col.last >= col.delay){
+        col.head += 1;
+        col.last = now;
+        if(col.head - col.trailSize > H/FONT_SIZE + 4){
+          col.head = -r(0,20);
+          col.delay = r(45,130);
+          col.trailSize = Math.floor(r(14,30));
+          charCache[c] = {};
+        }
+      }
+
+      const headRow = Math.floor(col.head);
+      const cache = charCache[c];
+
+      for(let i=0;i<col.trailSize;i++){
+        const row = headRow - i;
+        if(row < 0) continue;
+        const y = row*FONT_SIZE;
+        if(y > H) continue;
+
+        if(cache[row] === undefined || Math.random() < 0.015){
+          cache[row] = getChar();
+        }
+
+        const t = 1 - i/col.trailSize;
+        const x = c*FONT_SIZE;
+
+        if(i === 0){
+          ctx.shadowColor = 'rgba(0,255,140,0.95)';
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = '#d9ffe9';
+        } else {
+          ctx.shadowBlur = t > 0.6 ? 5 : 0;
+          ctx.shadowColor = 'rgba(0,255,140,0.8)';
+          const lightness = 30 + t*38;
+          ctx.fillStyle = `hsl(146, 100%, ${lightness}%)`;
+        }
+        ctx.fillText(cache[row], x, y);
+      }
+
+      const cutoff = headRow - col.trailSize - 5;
+      if(cutoff % 30 === 0){
+        for(const k in cache){ if(k < cutoff) delete cache[k]; }
+      }
+    }
+
+    ctx.shadowBlur = 0;
+
+    ripples.forEach(rp=>{
+      ctx.beginPath();
+      ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(0,255,140,${rp.alpha})`;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = 'rgba(0,255,140,0.9)';
+      ctx.shadowBlur = 14;
+      ctx.stroke();
+      rp.r += 6;
+      rp.alpha -= 0.02;
+    });
+    ripples = ripples.filter(rp => rp.alpha > 0);
+    ctx.shadowBlur = 0;
+
+    bursts.forEach(b=>{
+      ctx.font = `${b.size}px monospace`;
+      ctx.fillStyle = `rgba(120,255,190,${b.life})`;
+      ctx.shadowColor = 'rgba(0,255,140,0.9)';
+      ctx.shadowBlur = 10;
+      ctx.fillText(b.ch, b.x, b.y);
+      b.x += b.vx;
+      b.y += b.vy;
+      b.vy += 0.03;
+      b.life -= 0.016;
+    });
+    bursts = bursts.filter(b => b.life > 0);
+    ctx.shadowBlur = 0;
+
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
+
+  /* ================= APARICION DE LA TARJETA ================= */
+  window.addEventListener('load', ()=>{
+    setTimeout(()=>{
+      document.getElementById('card-outer').classList.add('show');
+      document.getElementById('exit-btn').classList.add('show');
+      document.getElementById('hint').classList.add('show');
+    }, 2800);
+  });
+
+  /* ================= PILDORAS MAGNETICAS (estilo GSAP) ================= */
+  function magnetic(el, {radius=95, strength=0.45, wiggleAngle=3, wiggleDuration=1.7} = {}){
+    if(!window.gsap){ return; }
+    let bounds = el.getBoundingClientRect();
+    const refresh = ()=>{ bounds = el.getBoundingClientRect(); };
+    window.addEventListener('resize', refresh);
+
+    gsap.to(el, {
+      rotation: wiggleAngle,
+      duration: wiggleDuration,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+    window.addEventListener('mousemove', (e)=>{
+      refresh();
+      const cx = bounds.left + bounds.width/2;
+      const cy = bounds.top + bounds.height/2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.hypot(dx,dy);
+
+      if(dist < radius){
+        gsap.to(el, {
+          x: dx*strength,
+          y: dy*strength,
+          duration: 0.4,
+          ease: "power2.out",
+          overwrite: "auto"
+        });
+      } else {
+        gsap.to(el, {
+          x: 0, y: 0,
+          duration: 0.7,
+          ease: "elastic.out(1, 0.4)",
+          overwrite: "auto"
+        });
+      }
+    });
+
+    el.addEventListener('mousedown', ()=>{
+      gsap.to(el, { scale: 0.92, duration: 0.15, ease: "power2.out", overwrite: "auto" });
+    });
+    ['mouseup','mouseleave'].forEach(ev=>{
+      el.addEventListener(ev, ()=>{
+        gsap.to(el, { scale: 1, duration: 0.4, ease: "elastic.out(1,0.5)", overwrite: "auto" });
+      });
+    });
+  }
+
+  magnetic(document.getElementById('join-btn'), { radius: 110, strength: 0.4 });
+  magnetic(document.getElementById('exit-btn'), { radius: 80, strength: 0.5, wiggleAngle: -3 });
+
+})();
+</script>
+</body>
+</html>

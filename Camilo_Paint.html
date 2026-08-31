@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Paint Online - Biblioteca de Dibujos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr 300px;
+            gap: 20px;
+        }
+
+        /* ===== Panel de Herramientas ===== */
+        .tools-panel {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #0f3460;
+        }
+
+        .tools-panel h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #a8b2d1;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .tool-group {
+            margin-bottom: 15px;
+        }
+
+        .tool-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #8892b0;
+            margin-bottom: 5px;
+        }
+
+        .tool-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 4px 0;
+            border: 2px solid #233554;
+            border-radius: 8px;
+            background: #0a0a1a;
+            color: #ccd6f6;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            text-align: left;
+            padding-left: 15px;
+        }
+
+        .tool-btn:hover {
+            background: #233554;
+            border-color: #667eea;
+        }
+
+        .tool-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: #fff;
+        }
+
+        .tool-btn .icon {
+            margin-right: 10px;
+        }
+
+        /* ===== Lienzo ===== */
+        .canvas-wrapper {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #0f3460;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            background: white;
+            border-radius: 10px;
+            cursor: crosshair;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .canvas-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .canvas-controls input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .canvas-controls input[type="range"] {
+            width: 120px;
+            accent-color: #667eea;
+        }
+
+        .canvas-controls label {
+            font-size: 0.8rem;
+            color: #8892b0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== Biblioteca ===== */
+        .library-panel {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid #0f3460;
+            max-height: 700px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .library-panel h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #a8b2d1;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .library-grid {
+            overflow-y: auto;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding-right: 5px;
+        }
+
+        .library-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .library-grid::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .library-item {
+            background: #0a0a1a;
+            border-radius: 8px;
+            padding: 8px;
+            border: 2px solid #233554;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .library-item:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .library-item img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            background: white;
+        }
+
+        .library-item .author {
+            font-size: 0.6rem;
+            color: #8892b0;
+            margin-top: 4px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .library-empty {
+            color: #8892b0;
+            text-align: center;
+            padding: 30px 0;
+            grid-column: 1 / -1;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            min-width: 80px;
+        }
+
+        .action-btn.save {
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn.save:hover {
+            background: #5a6fd6;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.download {
+            background: #f093fb;
+            color: #1a1a2e;
+        }
+
+        .action-btn.download:hover {
+            background: #e07be8;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.clear {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .action-btn.clear:hover {
+            background: #e55a5a;
+            transform: translateY(-2px);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .library-panel {
+                max-height: 300px;
+            }
+            .library-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .library-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ===== Notificaciones ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #233554;
+            color: #ccd6f6;
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 1px solid #667eea;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
+            transition: all 0.5s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎨 Paint Online</h1>
+
+    <div class="main-layout">
+        <!-- Panel de Herramientas -->
+        <div class="tools-panel">
+            <h3>🛠 Herramientas</h3>
+
+            <div class="tool-group">
+                <label>Dibujo</label>
+                <button class="tool-btn active" data-tool="pencil">
+                    <span class="icon">✏️</span> Lápiz
+                </button>
+                <button class="tool-btn" data-tool="eraser">
+                    <span class="icon">🧹</span> Borrador
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <label>Formas</label>
+                <button class="tool-btn" data-tool="rect">
+                    <span class="icon">▭</span> Rectángulo
+                </button>
+                <button class="tool-btn" data-tool="circle">
+                    <span class="icon">◯</span> Círculo
+                </button>
+                <button class="tool-btn" data-tool="line">
+                    <span class="icon">╱</span> Línea
+                </button>
+            </div>
+
+            <div class="tool-group">
+                <label>Texto</label>
+                <button class="tool-btn" data-tool="text">
+                    <span class="icon">🔤</span> Texto
+                </button>
+            </div>
+        </div>
+
+        <!-- Lienzo -->
+        <div class="canvas-wrapper">
+            <canvas id="canvas" width="700" height="500"></canvas>
+
+            <div class="canvas-controls">
+                <label>
+                    Color
+                    <input type="color" id="colorPicker" value="#000000">
+                </label>
+                <label>
+                    Tamaño
+                    <input type="range" id="sizePicker" min="1" max="30" value="3">
+                    <span id="sizeDisplay">3</span>
+                </label>
+                <div class="action-buttons">
+                    <button class="action-btn save" onclick="saveDrawing()">💾 Guardar</button>
+                    <button class="action-btn download" onclick="downloadDrawing()">⬇️ Descargar</button>
+                    <button class="action-btn clear" onclick="clearCanvas()">🗑️ Limpiar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biblioteca -->
+        <div class="library-panel">
+            <h3>📚 Biblioteca de Dibujos</h3>
+            <div class="library-grid" id="libraryGrid">
+                <div class="library-empty">Aún no hay dibujos guardados.<br>¡Sé el primero!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast de notificación -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ============================================================
+    //  CONFIGURACIÓN INICIAL
+    // ============================================================
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const colorPicker = document.getElementById('colorPicker');
+    const sizePicker = document.getElementById('sizePicker');
+    const sizeDisplay = document.getElementById('sizeDisplay');
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let currentTool = 'pencil';
+    let startX = 0;
+    let startY = 0;
+    let drawing = false; // para formas y texto
+
+    // Estado de la imagen actual (para previsualizar formas)
+    let savedImageData = null;
+
+    // ============================================================
+    //  BIBLIOTECA (localStorage)
+    // ============================================================
+    let library = [];
+
+    function loadLibrary() {
+        const stored = localStorage.getItem('paintLibrary');
+        if (stored) {
+            try {
+                library = JSON.parse(stored);
+            } catch(e) {
+                library = [];
+            }
+        }
+        renderLibrary();
+    }
+
+    function saveLibrary() {
+        localStorage.setItem('paintLibrary', JSON.stringify(library));
+        renderLibrary();
+    }
+
+    function renderLibrary() {
+        const grid = document.getElementById('libraryGrid');
+        if (library.length === 0) {
+            grid.innerHTML = `<div class="library-empty">Aún no hay dibujos guardados.<br>¡Sé el primero!</div>`;
+            return;
+        }
+
+        grid.innerHTML = library.map((item, index) => `
+            <div class="library-item" onclick="loadFromLibrary(${index})" title="Haz clic para cargar este dibujo">
+                <img src="${item.data}" alt="Dibujo ${index+1}">
+                <div class="author">${item.author || 'Anónimo'}</div>
+            </div>
+        `).join('');
+    }
+
+    function loadFromLibrary(index) {
+        const item = library[index];
+        if (!item) return;
+        const img = new Image();
+        img.onload = function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            showToast('✅ Dibujo cargado desde la biblioteca');
+        };
+        img.src = item.data;
+    }
+
+    // ============================================================
+    //  GUARDAR Y DESCARGAR
+    // ============================================================
+    function saveDrawing() {
+        const dataUrl = canvas.toDataURL('image/png');
+        const author = prompt('✍️ Ingresa tu nombre (opcional):', 'Anónimo') || 'Anónimo';
+        library.push({
+            data: dataUrl,
+            author: author,
+            date: new Date().toISOString()
+        });
+        saveLibrary();
+        showToast(`✅ Dibujo guardado por "${author}" en la biblioteca`);
+    }
+
+    function downloadDrawing() {
+        const link = document.createElement('a');
+        link.download = `paint-drawing-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('⬇️ Dibujo descargado');
+    }
+
+    function clearCanvas() {
+        if (confirm('¿Limpiar el lienzo?')) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            showToast('🗑️ Lienzo limpiado');
+        }
+    }
+
+    // ============================================================
+    //  TOAST NOTIFICATIONS
+    // ============================================================
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2500);
+    }
+
+    // ============================================================
+    //  HERRAMIENTAS - EVENTOS DEL RATÓN
+    // ============================================================
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const clientX = e.clientX || e.touches?.[0]?.clientX || 0;
+        const clientY = e.clientY || e.touches?.[0]?.clientY || 0;
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    // ---- Inicio de dibujo ----
+    function startDraw(e) {
+        e.preventDefault();
+        const pos = getPos(e);
+        isDrawing = true;
+        lastX = pos.x;
+        lastY = pos.y;
+        startX = pos.x;
+        startY = pos.y;
+
+        if (currentTool === 'pencil' || currentTool === 'eraser') {
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        } else {
+            // Para formas: guardamos el estado actual para previsualizar
+            savedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    // ---- Dibujo en movimiento ----
+    function draw(e) {
+        e.preventDefault();
+        if (!isDrawing) return;
+        const pos = getPos(e);
+
+        if (currentTool === 'pencil') {
+            ctx.lineWidth = parseInt(sizePicker.value);
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = colorPicker.value;
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+        else if (currentTool === 'eraser') {
+            ctx.lineWidth = parseInt(sizePicker.value) * 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+        else if (currentTool === 'rect' || currentTool === 'circle' || currentTool === 'line') {
+            // Restauramos el estado guardado para previsualizar
+            ctx.putImageData(savedImageData, 0, 0);
+            drawShapePreview(startX, startY, pos.x, pos.y);
+        }
+        else if (currentTool === 'text') {
+            // No hacemos nada en movimiento, se dibuja al soltar
+        }
+
+        lastX = pos.x;
+        lastY = pos.y;
+    }
+
+    // ---- Fin de dibujo ----
+    function endDraw(e) {
+        if (!isDrawing) return;
+        isDrawing = false;
+
+        if (currentTool === 'pencil' || currentTool === 'eraser') {
+            ctx.closePath();
+        }
+        else if (currentTool === 'rect' || currentTool === 'circle' || currentTool === 'line') {
+            const pos = getPos(e);
+            // Dibujamos la forma final sin previsualización
+            ctx.putImageData(savedImageData, 0, 0);
+            drawShapeFinal(startX, startY, pos.x, pos.y);
+        }
+        else if (currentTool === 'text') {
+            const pos = getPos(e);
+            const text = prompt('📝 Escribe tu texto:', 'Hola');
+            if (text) {
+                ctx.font = `${parseInt(sizePicker.value) * 4}px Arial`;
+                ctx.fillStyle = colorPicker.value;
+                ctx.textBaseline = 'top';
+                ctx.fillText(text, pos.x, pos.y);
+            }
+        }
+
+        savedImageData = null;
+    }
+
+    // ---- Dibujar formas (preview y final) ----
+    function drawShapePreview(x1, y1, x2, y2) {
+        const color = colorPicker.value;
+        const size = parseInt(sizePicker.value);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (currentTool === 'rect') {
+            ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+        }
+        else if (currentTool === 'circle') {
+            const radius = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            ctx.beginPath();
+            ctx.arc(x1, y1, radius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        else if (currentTool === 'line') {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+    }
+
+    function drawShapeFinal(x1, y1, x2, y2) {
+        const color = colorPicker.value;
+        const size = parseInt(sizePicker.value);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = size;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (currentTool === 'rect') {
+            ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+        }
+        else if (currentTool === 'circle') {
+            const radius = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            ctx.beginPath();
+            ctx.arc(x1, y1, radius, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        else if (currentTool === 'line') {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+    }
+
+    // ============================================================
+    //  EVENTOS - RATÓN Y TÁCTIL
+    // ============================================================
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+
+    canvas.addEventListener('touchstart', startDraw);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchend', endDraw);
+
+    // ============================================================
+    //  CAMBIO DE HERRAMIENTA
+    // ============================================================
+    document.querySelectorAll('.tool-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentTool = this.dataset.tool;
+            canvas.style.cursor = currentTool === 'eraser' ? 'cell' : 'crosshair';
+            showToast(`🛠 Herramienta: ${this.textContent.trim()}`);
+        });
+    });
+
+    // ============================================================
+    //  TAMAÑO
+    // ============================================================
+    sizePicker.addEventListener('input', function() {
+        sizeDisplay.textContent = this.value;
+    });
+
+    // ============================================================
+    //  INICIALIZAR
+    // ============================================================
+    // Fondo blanco
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    loadLibrary();
+    showToast('🎨 ¡Bienvenido! Dibuja algo y guárdalo');
+
+    // ============================================================
+    //  SOPORTE PARA TECLADO (Ctrl+Z no implementado por simplicidad)
+    // ============================================================
+    console.log('🎨 Paint Online cargado correctamente');
+</script>
+
+</body>
+</html>

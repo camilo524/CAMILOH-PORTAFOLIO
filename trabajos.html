@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trabajos — Camiloh | Artista 3D &amp; IA</title>
+<meta name="description" content="Portfolio de Camiloh: proyectos de animación 3D, CGI, VFX e inteligencia artificial. Índice de trabajos publicitarios y visuales.">
+<meta name="author" content="Camiloh">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0c1526">
+<link rel="canonical" href="https://camiloh.co/trabajos.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Trabajos — Camiloh">
+<meta property="og:description" content="Proyectos de animación 3D, CGI, VFX e IA. Portfolio de Camiloh.">
+<meta property="og:url" content="https://camiloh.co/trabajos.html">
+<meta property="og:site_name" content="Camiloh">
+<meta property="og:image" content="https://camiloh.co/assets/img/og-trabajos.jpg">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Trabajos — Camiloh">
+<meta name="twitter:description" content="Proyectos de animación 3D, CGI, VFX e IA.">
+<meta name="twitter:image" content="https://camiloh.co/assets/img/og-trabajos.jpg">
+
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://vjs.zencdn.net" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet">
+<link rel="stylesheet" href="css/trabajos.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Trabajos — Camiloh",
+  "description": "Portfolio de proyectos 3D, VFX e inteligencia artificial.",
+  "url": "https://camiloh.co/trabajos.html",
+  "author": {
+    "@type": "Person",
+    "name": "Camiloh",
+    "url": "https://camiloh.co",
+    "jobTitle": "Artista 3D",
+    "sameAs": [
+      "https://www.instagram.com/camiloohh/",
+      "https://www.behance.net/camiloh"
+    ]
+  }
+}
+</script>
+
+<!-- Analytics: reemplaza G-XXXXXXXXXX con tu Measurement ID de GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-HQC27XZN3M', { anonymize_ip: true, send_page_view: true });
+</script>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div id="mouseGlow"></div>
+<div id="grain"></div>
+<div id="halation"></div>
+<div id="cursor"></div>
+
+<div id="lightbox">
+  <span class="lb-close">CERRAR ✕</span>
+  <img src="" alt="">
+  <div class="lb-caption"></div>
+</div>
+
+<nav>
+  <a class="logo" href="index.html">Camiloh</a>
+  <ul>
+    <li><a href="index.html#sobre-mi">Sobre mí</a></li>
+    <li><a href="trabajos.html">Trabajos</a></li>
+    <li><a href="galeria.html">Galería</a></li>
+    <li><a href="index.html#contacto">Contacto</a></li>
+    <li><a href="tu-arte.html">Tu arte</a></li>
+  </ul>
+</nav>
+
+<header class="tw-hero">
+  <span class="tag">
+    <svg viewBox="0 0 24 24"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+    Mi trabajo
+  </span>
+  <div class="tw-hero-title-row">
+    <h1>Proyectos<svg class="h1-spark" id="heroSpark" viewBox="0 0 24 24"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg></h1>
+    <button type="button" class="lang-toggle" id="langToggle" aria-label="Cambiar idioma">EN</button>
+  </div>
+  <p>Índice de proyectos, agradecimientos a todos los involucrados.</p>
+  <div class="deco-line"></div>
+</header>
+
+<div class="tw-layout">
+  <div class="tw-col-list">
+    <div class="tw-col-head">
+      <span>Nombre</span>
+      <span class="tw-role-head">
+        Rol
+        <div class="filter-pills" role="group" aria-label="Filtrar por tipo">
+          <button type="button" class="filter-pill active" data-filter="all">Todos</button>
+          <button type="button" class="filter-pill" data-filter="3d">3D</button>
+          <button type="button" class="filter-pill" data-filter="ia">IA</button>
+        </div>
+      </span>
+      <span>Año</span>
+    </div>
+    <!-- skeleton while JS builds the list -->
+    <div class="proj-skeleton" aria-hidden="true">
+      <div class="skel-row"></div>
+      <div class="skel-row"></div>
+      <div class="skel-row"></div>
+      <div class="skel-row"></div>
+      <div class="skel-row"></div>
+      <div class="skel-row"></div>
+    </div>
+    <!-- proj-row items injected by js/trabajos.js -->
+    <div class="tw-note">
+      <svg class="easter-note-star" viewBox="0 0 24 24"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+      <span>Cada proyecto es una historia en construcción.</span>
+      <span class="tw-note-line"></span>
+      <svg class="easter-note-star" viewBox="0 0 24 24"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+    </div>
+  </div>
+
+  <div class="tw-col-preview">
+    <div class="preview-frame" id="previewFrame">
+      <!-- preview images injected by js -->
+      <div class="cap" id="pvCap"></div>
+      <span class="zoom-hint">clic para ampliar</span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span><span class="easter-copy" aria-hidden="true">©</span> <span id="footerLeftText">2026 Camiloh — Artista 3D</span></span>
+  <span id="footerRightText">Rodado en 35mm · Colombia</span>
+</footer>
+<p class="code-thanks">Hecho con ayuda de <strong>Claude</strong> y <strong>Grok</strong></p>
+
+<script defer src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script defer src="js/trabajos.js"></script>
+</body>
+</html>
