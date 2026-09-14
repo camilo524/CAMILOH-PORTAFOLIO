@@ -1314,6 +1314,14 @@ body{
   100%{ background-position:-100% 0; }
 }
 body.is-ready .proj-skeleton{ display:none; }
+.proj-skeleton.is-error{
+  display:flex; align-items:center; min-height:72px; margin:8px 0;
+}
+.tw-load-error{
+  margin:0; padding:18px 8px;
+  font-family:inherit; font-size:14px; letter-spacing:.04em;
+  color:rgba(247,241,225,.55);
+}
 
 /* ---------- scroll reveal on project rows ---------- */
 .proj-row{
