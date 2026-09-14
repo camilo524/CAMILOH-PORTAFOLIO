@@ -7,14 +7,26 @@
 /* Data lives in data/proyectos.json
    Edit that file to add/update titles, years, credits, roles, etc.
    Schema per project:
-     title, year, slug, cat? ("ia" | omitted=3d),
+     title, year, slug, folder (R2 dir, default TITLE UPPERCASE),
+     cat? ("ia" | omitted=3d),
      role: { es, en }, desc: { es, en },
      credits: [{ role, name, ig? }],
      accent, rgb, deep, hue
+   Media: {mediaBase}/{folder}/cover.webp | 01.webp–06.webp | video.mp4
 */
 
 let PROJECTS = [];
 const PROJECTS_URL = "data/proyectos.json";
+let MEDIA_BASE = "https://media.camiloh.co";
+
+function projectFolder(p) {
+  if (p && p.folder) return String(p.folder).trim();
+  return String((p && p.title) || "").trim().toUpperCase();
+}
+
+function mediaUrl(p, file) {
+  return MEDIA_BASE.replace(/\/$/, "") + "/" + encodeURIComponent(projectFolder(p)).replace(/'/g, "%27") + "/" + file;
+}
 
 function sortProjects() {
   PROJECTS.sort((a, b) => a.title.localeCompare(b.title, "es", { sensitivity: "base" }));
@@ -29,6 +41,9 @@ function loadProjects() {
     .then((data) => {
       const list = Array.isArray(data) ? data : (data && data.projects);
       if (!Array.isArray(list)) throw new Error("JSON sin lista de proyectos");
+      if (data && typeof data.mediaBase === "string" && data.mediaBase.trim()) {
+        MEDIA_BASE = data.mediaBase.trim().replace(/\/$/, "");
+      }
       PROJECTS = list;
       sortProjects();
     });
@@ -162,7 +177,7 @@ function buildList() {
     // Lazy: only set data-src; real src loads on hover / near viewport
     const img = document.createElement("img");
     img.dataset.index = i;
-    img.dataset.src = "assets/img/" + p.slug + ".jpg";
+    img.dataset.src = mediaUrl(p, "cover.webp");
     img.alt = p.title;
     img.decoding = "async";
     img.loading = "lazy";
@@ -228,7 +243,7 @@ function buildPanel(idx) {
     const num = pad(n);
     frames +=
       '<div class="pp-shot">' +
-      '<img data-src="assets/img/' + p.slug + "-frame" + num + '.jpg" alt="' + p.title + " " + num + '" loading="lazy">' +
+      '<img data-src="' + mediaUrl(p, num + ".webp") + '" alt="' + p.title + " " + num + '" loading="lazy">' +
       '<span class="pp-shot-num">' + num + "</span>" +
       '<span class="pp-shot-zoom">' + t("expand") + "</span>" +
       "</div>";
@@ -249,8 +264,8 @@ function buildPanel(idx) {
     '<div class="pp-spot"></div>' +
     '<span class="pp-reel">' + t("reel") + "</span>" +
     '<div class="pp-media-wrap"><div class="pp-media">' +
-    '<video class="pp-video video-js vjs-glass" id="ppVideo-' + idx + '" muted loop playsinline controls preload="none" poster="assets/img/' + p.slug + '.jpg">' +
-    '<source data-src="assets/video/' + p.slug + '.mp4" type="video/mp4">' +
+    '<video class="pp-video video-js vjs-glass" id="ppVideo-' + idx + '" muted loop playsinline controls preload="none" poster="' + mediaUrl(p, "cover.webp") + '">' +
+    '<source data-src="' + mediaUrl(p, "video.mp4") + '" type="video/mp4">' +
     "</video></div></div>" +
     '<div class="pp-head"><div class="pp-head-left">' +
     '<h2 class="pp-title gradient-text">' + p.title + "</h2>" +
@@ -1010,13 +1025,34 @@ function observeRows() {
   });
 }
 
+function bindNavToggle() {
+  const btn = document.getElementById("navToggle");
+  const nav = document.querySelector("nav");
+  if (!btn || !nav) return;
+  const setOpen = (open) => {
+    nav.classList.toggle("is-open", open);
+    document.body.classList.toggle("nav-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    btn.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+  };
+  btn.addEventListener("click", () => setOpen(!nav.classList.contains("is-open")));
+  nav.querySelectorAll("ul a").forEach((a) => {
+    a.addEventListener("click", () => setOpen(false));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && nav.classList.contains("is-open")) setOpen(false);
+  });
+}
+
 function boot() {
+  bindNavToggle();
   bindFilter();
   bindLangToggle();
   bindEasterEggs();
   applyLanguage();
-  magnetize("nav ul a", 0.35);
-  bindCursorHover("a, .proj-row, .preview-frame, .filter-pill, .lang-toggle, .pp-credits-toggle");
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  if (!coarse) magnetize("nav ul a", 0.35);
+  bindCursorHover("a, .proj-row, .preview-frame, .filter-pill, .lang-toggle, .pp-credits-toggle, .nav-toggle");
   track("page_view", { page: "trabajos" });
 }
 

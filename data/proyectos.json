@@ -1,10 +1,12 @@
 {
-  "readme": "Edita este archivo para agregar o actualizar trabajos. Campos por proyecto: title, year, slug (debe coincidir con assets/img/{slug}.jpg y assets/video/{slug}.mp4), cat opcional (\"ia\"; si se omite es 3D), role {es,en}, desc {es,en}, credits [{role, name, ig}], accent, rgb, deep, hue.",
+  "readme": "Edita este archivo para agregar o actualizar trabajos. Assets en R2: https://media.camiloh.co/{folder}/cover.webp | 01.webp…06.webp | video.mp4. `folder` debe coincidir con el nombre de la carpeta en el bucket (por defecto el título en MAYÚSCULAS, ej. Piscilago → PISCILAGO). Campos: title, year, slug, folder, cat opcional (\"ia\"), role {es,en}, desc {es,en}, credits [{role,name,ig}], accent, rgb, deep, hue.",
+  "mediaBase": "https://media.camiloh.co",
   "projects": [
     {
       "title": "Aloha",
       "year": "2024",
       "slug": "aloha",
+      "folder": "ALOHA",
       "role": {
         "es": "Simulación",
         "en": "Simulation"
@@ -119,6 +121,7 @@
       "title": "Amper",
       "year": "2026",
       "slug": "amper",
+      "folder": "AMPER",
       "cat": "ia",
       "role": {
         "es": "Artista 3D y Artista de IA",
@@ -189,6 +192,7 @@
       "title": "Auntie Anne's",
       "year": "2023",
       "slug": "auntie-annes",
+      "folder": "AUNTIE ANNE'S",
       "role": {
         "es": "Iluminación y render",
         "en": "Lighting & render"
@@ -258,6 +262,7 @@
       "title": "Avianca",
       "year": "2025",
       "slug": "avianca",
+      "folder": "AVIANCA",
       "role": {
         "es": "Iluminación y render",
         "en": "Lighting & render"
@@ -317,6 +322,7 @@
       "title": "Brokix",
       "year": "2025",
       "slug": "brokix",
+      "folder": "BROKIX",
       "role": {
         "es": "Animación",
         "en": "Animation"
@@ -361,6 +367,7 @@
       "title": "Club Colombia",
       "year": "2026",
       "slug": "club-colombia",
+      "folder": "CLUB COLOMBIA",
       "cat": "ia",
       "role": {
         "es": "Artista de IA",
@@ -446,6 +453,7 @@
       "title": "Cyzone",
       "year": "2026",
       "slug": "cyzone",
+      "folder": "CYZONE",
       "role": {
         "es": "Modelado, iluminación y render",
         "en": "Modeling, lighting & render"
@@ -515,6 +523,7 @@
       "title": "Flytrap",
       "year": "2025",
       "slug": "flytrap",
+      "folder": "FLYTRAP",
       "role": {
         "es": "Generalista 3D",
         "en": "3D generalist"
@@ -539,6 +548,7 @@
       "title": "Four Loko",
       "year": "2026",
       "slug": "four-loko",
+      "folder": "FOUR LOKO",
       "role": {
         "es": "Modelado y animación",
         "en": "Modeling & animation"
@@ -583,6 +593,7 @@
       "title": "Frunas",
       "year": "2025",
       "slug": "frunas",
+      "folder": "FRUNAS",
       "role": {
         "es": "Modelado y texturizado",
         "en": "Modeling & texturing"
@@ -677,6 +688,7 @@
       "title": "Holcim",
       "year": "2025",
       "slug": "holcim",
+      "folder": "HOLCIM",
       "role": {
         "es": "Modelado y texturizado",
         "en": "Modeling & texturing"
@@ -751,6 +763,7 @@
       "title": "Joaqui",
       "year": "2025",
       "slug": "joaqui",
+      "folder": "JOAQUI",
       "role": {
         "es": "Modelado y texturizado",
         "en": "Modeling & texturing"
@@ -805,6 +818,7 @@
       "title": "Kinderland",
       "year": "2025",
       "slug": "kinderland",
+      "folder": "KINDERLAND",
       "role": {
         "es": "Iluminación y render",
         "en": "Lighting & render"
@@ -849,6 +863,7 @@
       "title": "Knak",
       "year": "2025",
       "slug": "knak",
+      "folder": "KNAK",
       "role": {
         "es": "Modelado, texturizado e iluminación",
         "en": "Modeling, texturing & lighting"
@@ -928,6 +943,7 @@
       "title": "Late del Sur",
       "year": "2026",
       "slug": "late-del-sur",
+      "folder": "LATE DEL SUR",
       "cat": "ia",
       "role": {
         "es": "Artista de IA",
@@ -993,6 +1009,7 @@
       "title": "Lil Peep",
       "year": "2026",
       "slug": "lil-peep",
+      "folder": "LIL PEEP",
       "role": {
         "es": "Animación",
         "en": "Animation"
@@ -1082,6 +1099,7 @@
       "title": "Lit Killah",
       "year": "2025",
       "slug": "lit-killah",
+      "folder": "LIT KILLAH",
       "role": {
         "es": "Modelado, texturizado y render",
         "en": "Modeling, texturing & render"
@@ -1131,6 +1149,7 @@
       "title": "Malher",
       "year": "2025",
       "slug": "malher",
+      "folder": "MALHER",
       "role": {
         "es": "Modelado y texturizado",
         "en": "Modeling & texturing"
@@ -1200,6 +1219,7 @@
       "title": "Miniso Navidad",
       "year": "2024",
       "slug": "miniso-navidad",
+      "folder": "MINISO NAVIDAD",
       "role": {
         "es": "Iluminación, animación y render",
         "en": "Lighting, animation & render"
@@ -1264,6 +1284,7 @@
       "title": "Mirringo",
       "year": "2024",
       "slug": "mirringo",
+      "folder": "MIRRINGO",
       "role": {
         "es": "Modelado, texturizado e iluminación",
         "en": "Modeling, texturing & lighting"
@@ -1383,6 +1404,7 @@
       "title": "MP3 Emilia",
       "year": "2024",
       "slug": "mp3-emilia",
+      "folder": "MP3 EMILIA",
       "role": {
         "es": "Animación",
         "en": "Animation"
@@ -1562,6 +1584,7 @@
       "title": "Paloma Mami",
       "year": "2025",
       "slug": "paloma-mami",
+      "folder": "PALOMA MAMI",
       "role": {
         "es": "Generalista 3D",
         "en": "3D generalist"
@@ -1741,6 +1764,7 @@
       "title": "Piscilago",
       "year": "2023",
       "slug": "piscilago",
+      "folder": "PISCILAGO",
       "role": {
         "es": "Modelado, iluminación y render",
         "en": "Modeling, lighting & render"
@@ -1871,6 +1895,7 @@
       "title": "Polet",
       "year": "2025",
       "slug": "polet",
+      "folder": "POLET",
       "role": {
         "es": "Modelado y texturizado",
         "en": "Modeling & texturing"
@@ -1970,6 +1995,7 @@
       "title": "Quatro",
       "year": "2025",
       "slug": "quatro",
+      "folder": "QUATRO",
       "role": {
         "es": "Motion graphics",
         "en": "Motion graphics"
@@ -2039,6 +2065,7 @@
       "title": "Rutinario",
       "year": "2026",
       "slug": "rutinario",
+      "folder": "RUTINARIO",
       "cat": "ia",
       "role": {
         "es": "Artista de IA",
@@ -2064,6 +2091,7 @@
       "title": "Santorini",
       "year": "2024",
       "slug": "santorini",
+      "folder": "SANTORINI",
       "role": {
         "es": "Modelado y texturizado",
         "en": "Modeling & texturing"
@@ -2138,6 +2166,7 @@
       "title": "Sech Visuales",
       "year": "2025",
       "slug": "sech-visuales",
+      "folder": "SECH VISUALES",
       "role": {
         "es": "Generalista 3D",
         "en": "3D generalist"
@@ -2167,6 +2196,7 @@
       "title": "STAY x PITBULLYING",
       "year": "2024",
       "slug": "staypit",
+      "folder": "STAY X PITBULLYING",
       "role": {
         "es": "Generalista 3D",
         "en": "3D generalist"

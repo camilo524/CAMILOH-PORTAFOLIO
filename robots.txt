@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /matrix.html
+Disallow: /Camilo_Paint.html
+
+Sitemap: https://camiloh.co/sitemap.xml
