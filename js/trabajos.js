@@ -1,664 +1,62 @@
 /* ═══════════════════════════════════════════════
    Trabajos — Camiloh
-   Data-driven list + panels + i18n (ES/EN)
+   List + panels + i18n (ES/EN)
+   Project data: data/proyectos.json
    ═══════════════════════════════════════════════ */
 
-const PROJECTS = [
-  {
-    title: "Aloha", year: "2024", slug: "aloha",
-    role: { es: "Simulación", en: "Simulation" },
-    desc: {
-      es: "VFX para el comercial de Aloha Cereza & Mandarina: un shot fresco donde el producto y el sabor se sienten.",
-      en: "VFX for the Aloha Cherry & Mandarin commercial — a crisp shot where the product and the flavor almost feel real."
-    },
-    /* credits template — copy this array into any project:
-       { role: "Animador 3D", name: "Camiloh", ig: "Camiloohh" }
-       ig is the Instagram username without @ ; link is auto-built */
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Productora ejecutiva", name: "Sara Lucía", ig: "soysaralucia" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Rigger", name: "Cristian Rangel", ig: "cristianrangel65" },
-      { role: "Simulación de tela", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Tomas Madrid", ig: "tomasmadridv" },
-      { role: "Motion", name: "Alejandra Monroy", ig: "mariamoon_roy" },
-      { role: "Color", name: "Cleyder Duque", ig: "cleyder_duque" },
-      { role: "Audio", name: "Diego Caceres", ig: "dizeemills" },
-      { role: "DP", name: "Andres Mauricio", ig: "comanchedp1" },
-      { role: "AD", name: "Camilo Bahamon", ig: "camilobahamonj" },
-      { role: "Producción de campo", name: "Alejo", ig: "alejo_de_lujo" },
-      { role: "Arte", name: "Rodrigo Quintero", ig: "rodrigoquintero" },
-      { role: "Vestuario", name: "Jesus Barrios", ig: "yisus___________" },
-      { role: "Agencia", name: "Havas Colombia", ig: "havascolombia" },
-    ],
-    accent: "#ced449", rgb: "206,212,73", deep: "#767a1f", hue: "54deg"
-  },
-  {
-    title: "Amper", year: "2026", slug: "amper", cat: "ia",
-    role: { es: "Artista 3D y Artista de IA", en: "3D Artist and AI Artist" },
-    desc: {
-      es: "Pieza generada con IA para Amper Icee, explorando un look publicitario limpio y con mucha energía visual.",
-      en: "AI-driven piece for Amper Icee, exploring a clean ad look with plenty of visual energy."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Modelado/Iluminación", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Simulación", name: "Eugenio Herrera", ig: "eugenio_herrera_fx" },
-      { role: "Composición", name: "Tomas Madrid", ig: "tomasmadridv" },
-      { role: "Matchmove", name: "Will Pinzón", ig: "willguitars" },
-    ],
-    accent: "#b3d449", rgb: "179,212,73", deep: "#647a1f", hue: "65deg"
-  },
-  {
-    title: "Auntie Anne's", year: "2023", slug: "auntie-annes",
-    role: { es: "Iluminación y render", en: "Lighting & render" },
-    desc: {
-      es: "Campaña para Auntie Anne's con mirada puesta en el Mundial 2026: iluminación y render pensados para que el producto brille en pantalla.",
-      en: "Campaign for Auntie Anne's aimed at the 2026 World Cup — lighting and render built so the product pops on screen."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Coordinacion", name: "Rafael Soto", ig: "rafacore_gs" },
-      { role: "Animación 3D", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Modelado/Iluminación", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Juan Aguirre", ig: "juanpa_00_" },
-      { role: "Composición", name: "Tomas madrid", ig: "tomasmadridv" },
-    ],
-    accent: "#d4bf49", rgb: "212,191,73", deep: "#7a6c1f", hue: "42deg"
-  },
-  {
-    title: "Avianca", year: "2025", slug: "avianca",
-    role: { es: "Iluminación y render", en: "Lighting & render" },
-    desc: {
-      es: "CGI para una campaña de Avianca: atmósfera cuidada, materiales honestos y un acabado listo para broadcast.",
-      en: "CGI for an Avianca campaign — careful atmosphere, honest materials, and a broadcast-ready finish."
-    },
-    credits: [
-      { role: "Postproductora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Sebastian Mejía", ig: "dr_pancreas" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Animación 3D", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Animación 3D", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Modelado/Iluminación", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Juan Aguirre", ig: "juanpa_00_" },
-    ],
-    accent: "#98d449", rgb: "152,212,73", deep: "#527a1f", hue: "77deg"
-  },
-  {
-    title: "Brokix", year: "2025", slug: "brokix",
-    role: { es: "Animación", en: "Animation" },
-    desc: {
-      es: "Animación 3D para la cancion de BROKIX Tu Eres Mala.",
-      en: "3D animation for the BROKIX song Tu Eres Mala."
-    },
-    credits: [
-      { role: "Dirección", name: "Rengi", ig: "rengi.enmarte" },
-      { role: "Animación 3D", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Animación 3D", name: "Juanpa", ig: "_juanpa1399_" },
-      { role: "Animación 3D", name: "Rengi", ig: "rengi.enmarte" },
-      { role: "Modelado y Iluminación", name: "Rengi", ig: "rengi.enmarte" },
-    ],
-    accent: "#e9e9e9", rgb: "232,232,232", deep: "#757575", hue: "188deg"
-  },
-  {
-    title: "Club Colombia", year: "2026", slug: "club-colombia", cat: "ia",
-    role: { es: "Artista de IA", en: "AI Artist" },
-    desc: {
-      es: "Exploración visual con IA para Club Colombia, buscando un tono premium sin perder calidez.",
-      en: "AI visual exploration for Club Colombia, aiming for a premium tone without losing warmth."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "María Monroy", ig: "mariamoon_roy" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Lorena Díaz", ig: "lore4714" },
-      { role: "Generación de Imagenes", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Generación de Imagenes", name: "María Monroy", ig: "mariamoon_roy" },
-      { role: "Generación de Imagenes", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Generación de Imagenes", name: "Maria Isabel Díez", ig: "mariaisabeldiezr" },
-      { role: "Generación de Video", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Generación de Video", name: "María Monroy", ig: "mariamoon_roy" },
-      { role: "Generación de Video", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Motion Graphics", name: "María Monroy", ig: "mariamoon_roy" },
-      { role: "Edición", name: "Ivan Hernández", ig: "ivhega.exe" },
-    ],
-    accent: "#49b8d4", rgb: "73,184,212", deep: "#1f687a", hue: "183deg"
-  },
-  {
-    title: "Cyzone", year: "2026", slug: "cyzone",
-    role: { es: "Modelado, iluminación y render", en: "Modeling, lighting & render" },
-    desc: {
-      es: "Campaña del perfume Cyzone Illusion con Evaluna: modelado, luz y render para un mundo glam y contemporáneo.",
-      en: "Campaign for Cyzone Illusion perfume with Evaluna — modeling, light and render for a glam, contemporary world."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Sebastian Mejía", ig: "dr_pancreas" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Modelado/Iluminación", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Animación 3D", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Animación 3D", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Juan Aguirre", ig: "juanpa_00_" },
-      { role: "Composición", name: "Tomas madrid", ig: "tomasmadridv" },
-    ],
-    accent: "#7cd449", rgb: "124,212,73", deep: "#407a1f", hue: "89deg"
-  },
-  {
-    title: "Flytrap", year: "2025", slug: "flytrap",
-    role: { es: "Generalista 3D", en: "3D generalist" },
-    desc: {
-      es: "Piezas publicitarias de juguetes para Flytrap.",
-      en: "Toy ad pieces for Flytrap."
-    },
-    credits: [
-      { role: "Artista 3D", name: "Camiloh", ig: "Camiloohh" },
-    ],
-    accent: "#7e49d4", rgb: "126,73,212", deep: "#421f7a", hue: "254deg"
-  },
-  {
-    title: "Four Loko", year: "2026", slug: "four-loko",
-    role: { es: "Modelado y animación", en: "Modeling & animation" },
-    desc: {
-      es: "Comercial para Four Loko Jackpot: modelado y animación con ritmo, color y un cierre que se queda en la cabeza.",
-      en: "Commercial for Four Loko Jackpot — modeling and animation with rhythm, color, and a closer that sticks."
-    },
-    credits: [
-      { role: "Director", name: "Jaime Restrepo", ig: "jaimerestrepo_tv" },
-      { role: "Productora", name: "Diana Buitrago", ig: "dianacromatica" },
-      { role: "Artista 3D", name: "Braviera", ig: "braviera" },
-      { role: "Rigger", name: "Juan Ñahui", ig: "juanybabas" },
-      { role: "Animación 3D", name: "Camiloh", ig: "Camiloohh" },
-    ],
-    accent: "#d44986", rgb: "212,73,134", deep: "#7a1f47", hue: "325deg"
-  },
-  {
-    title: "Frunas", year: "2025", slug: "frunas",
-    role: { es: "Modelado y texturizado", en: "Modeling & texturing" },
-    desc: {
-      es: "Campaña de Frunas para los nuevos sabores aciditos y dulcecitos.",
-      en: "Frunas campaign for the new sour and sweet flavors."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Productora ejecutiva", name: "Sara Lucía", ig: "soysaralucia" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Generación de Imagenes", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Generación de Imagenes", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Generación de Video", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Generación de Video", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Generación de Video", name: "Alejandra Monroy", ig: "sebasgambeta" },
-      { role: "Modelado/Textura/Iluminación", name: "Camiloh", ig: "mariamoon_roy" },
-      { role: "Motion Graphics", name: "Alejandra Monroy", ig: "mariamoon_roy" },
-      { role: "Audio", name: "Diego Caceres", ig: "dizeemills" },
-      { role: "DP", name: "Juan Sáchica", ig: "juanpablosachica" },
-      { role: "Agencia", name: "McCANN", ig: "mccann_colombia" },
-    ],
-    accent: "#49d44d", rgb: "73,212,77", deep: "#1f7a21", hue: "112deg"
-  },
-  {
-    title: "Holcim", year: "2025", slug: "holcim",
-    role: { es: "Modelado y texturizado", en: "Modeling & texturing" },
-    desc: {
-      es: "Campaña por los 70 años de Holcim: modelado y textura al servicio de una historia de marca sólida y cercana.",
-      en: "Campaign for Holcim's 70th anniversary — modeling and texture in service of a solid, approachable brand story."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Rigger", name: "Cristian Rangel", ig: "cristianrangel65" },
-      { role: "Modelado/Textura", name: "Angie Rubiano", ig: "/" },
-      { role: "Modelado/Textura", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Juan Aguirre", ig: "juanpa_00_" },
-      { role: "Motion", name: "Alejandra Monroy", ig: "mariamoon_roy" },
-    ],
-    accent: "#49d468", rgb: "73,212,104", deep: "#1f7a33", hue: "124deg"
-  },
-  {
-    title: "Joaqui", year: "2025", slug: "joaqui",
-    role: { es: "Modelado y texturizado", en: "Modeling & texturing" },
-    desc: {
-      es: "Visuales para el show de La Joaqui en Buenos Aires 2025: assets 3D listos para escenario y pantalla grande.",
-      en: "Visuals for La Joaqui's Buenos Aires 2025 show — 3D assets ready for stage and big screens."
-    },
-    credits: [
-      { role: "Directora", name: "Julia Conde", ig: "julitaconde" },
-      { role: "Productora", name: "Ivanna Watnik", ig: "_darussian" },
-      { role: "Edición", name: "Felipe Monguillot", ig: "shotbyfmb" },
-      { role: "Motion", name: "Andrés Alexander", ig: "eeffes" },
-      { role: "Composición", name: "Andrés Alexander", ig: "eeffes" },
-      { role: "Diseño Grafico", name: "Fabri Orellano", ig: "fabri.denis" },
-      { role: "Artista 3D", name: "Camiloh", ig: "Camiloohh" },
-    ],
-    accent: "#b549d4", rgb: "181,73,212", deep: "#661f7a", hue: "278deg"
-  },
-  {
-    title: "Kinderland", year: "2025", slug: "kinderland",
-    role: { es: "Iluminación y render", en: "Lighting & render" },
-    desc: {
-      es: "Pieza publicitaria para la tienda de juguetes Kinderland: color, luz y un acabado que invita a jugar.",
-      en: "Ad piece for the Kinderland toy store — color, light, and a finish that invites you to play."
-    },
-    credits: [
-      { role: "Directora", name: "Julia Conde", ig: "julitaconde" },
-      { role: "Productora", name: "Ivanna Watnik", ig: "_darussian" },
-      { role: "Artista 3D", name: "Cris", ig: "criswallss" },
-      { role: "Artista 3D", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Habían mas Artistas pero no los encontré y ya no me acuerdo tampoco😢", name: "si ves esto y participaste escribeme al dm!", ig: "Camiloohh" },
-    ],
-    accent: "#4966d4", rgb: "73,102,212", deep: "#1f327a", hue: "219deg"
-  },
-  {
-    title: "Knak", year: "2025", slug: "knak",
-    role: { es: "Modelado, texturizado e iluminación", en: "Modeling, texturing & lighting" },
-    desc: {
-      es: "Visuales para el show en vivo de KNAK: un paquete 3D con presencia escénica y cuidado al detalle.",
-      en: "Visuals for KNAK's live show — a 3D package with stage presence and careful detail."
-    },
-    credits: [
-      { role: "Directora", name: "Ivanna Watnik", ig: "_darussian" },
-      { role: "Asistente de dirección", name: "indajaus", ig: "indajaus._" },
-      { role: "Artista 3D", name: "indajaus", ig: "indajaus._" },
-      { role: "Artista 3D", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Artista 3D", name: "Fede Yoma", ig: "f.e.y._" },
-      { role: "Artista 3D", name: "Ezequiel Semczyszyn", ig: "batifbx" },
-      { role: "Motion, Comp y edit", name: "indajaus", ig: "indajaus._" },
-      { role: "Motion, Comp y edit", name: "Luka verm", ig: "vermithg" },
-      { role: "Motion, Comp y edit", name: "Fede Yoma", ig: "f.e.y._" },
-      { role: "Motion, Comp y edit", name: "Ezequiel Semczyszyn", ig: "batifbx" },
-      { role: "Motion, Comp y edit", name: "Nicolás Martins", ig: "1337.png" },
-      { role: "Motion, Comp y edit", name: "Ignacio Garin", ig: "garinignacio" },
-    ],
-    accent: "#494bd4", rgb: "73,75,212", deep: "#1f207a", hue: "230deg"
-  },
-  {
-    title: "Late del Sur", year: "2026", slug: "late-del-sur", cat: "ia",
-    role: { es: "Artista de IA", en: "AI Artist" },
-    desc: {
-      es: "Video musical con IA para los Juegos Suramericanos, interpretado por Capi y Soledad.",
-      en: "AI music video for the South American Games, performed by Capi and Soledad."
-    },
-    credits: [
-      { role: "Dirección", name: "Indajaus", ig: "indajaus._" },
-      { role: "Coordinacion", name: "Charly Bronzini", ig: "charlybronzini" },
-      { role: "Generación de Imagenes", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Generación de Imagenes", name: "Indajaus", ig: "indajaus._" },
-      { role: "Generación de Imagenes", name: "Luka Verm", ig: "vermithg" },
-      { role: "Generación de Video", name: "Indajaus", ig: "indajaus._" },
-      { role: "Generación de Video", name: "Luka Verm", ig: "vermithg" },
-      { role: "Generación de Video", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Edición", name: "Indajaus", ig: "indajaus._" },
-    ],
-    accent: "#d44950", rgb: "212,73,80", deep: "#7a1f23", hue: "348deg"
-  },
-  {
-    title: "Lil Peep", year: "2026", slug: "lil-peep",
-    role: { es: "Animación", en: "Animation" },
-    desc: {
-      es: "Visuales para el video musical Coke Baby de Lil Peep.",
-      en: "Visuals for Lil Peep's Coke Baby music video."
-    },
-    credits: [
-      { role: "Director", name: "Jaime Restrepo", ig: "jaimerestrepo_tv" },
-      { role: "Compañía Productora", name: "Dreambear", ig: "dreambearproductions" },
-      { role: "Productor de Línea", name: "Diana Buitrago", ig: "dianacromatica" },
-      { role: "3D Director", name: "Brayan Viera", ig: "braviera" },
-      { role: "Rigger", name: "Juan Ñahui", ig: "juanybabas" },
-      { role: "Modelado y Textura", name: "Alex Arroqui", ig: "sosty_ar" },
-      { role: "Modelado y Textura", name: "Juan Andino", ig: "juxni" },
-      { role: "Modelado y Textura", name: "Brayan Viera", ig: "braviera" },
-      { role: "Animación 3D", name: "Alex Arroqui", ig: "sosty_ar" },
-      { role: "Animación 3D", name: "Camiloh", ig: "camiloohh" },
-      { role: "Animación 3D", name: "Nohelia Trujillo", ig: "nohedraws" },
-      { role: "Animación 3D", name: "Juan Ñahui", ig: "juanybabas" },
-      { role: "Animación 3D", name: "Brayan Viera", ig: "braviera" },
-      { role: "Animatic", name: "Diana Buitrago", ig: "dianacromatica" },
-    ],
-    accent: "#d449a2", rgb: "212,73,162", deep: "#7a1f59", hue: "313deg"
-  },
-  {
-    title: "Lit Killah", year: "2025", slug: "lit-killah",
-    role: { es: "Modelado, texturizado y render", en: "Modeling, texturing & render" },
-    desc: {
-      es: "Visuales para el show en vivo de Lit Killah.",
-      en: "Visuals for Lit Killah's live show."
-    },
-    credits: [
-      { role: "Dirección Creativa", name: "Agustin perez", ig: "headprod" },
-      { role: "Dirección de Visuales", name: "Nicolás Martins", ig: "1337.png" },
-      { role: "Producción General", name: "Ivanna Watnik", ig: "_darussian" },
-      { role: "Artista 3D", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Edición y Composición", name: "Nicolás Martins", ig: "1337.png" },
-      { role: "Edición y Composición", name: "Andrés Alexanderh", ig: "eeffes" },
-    ],
-    accent: "#d049d4", rgb: "208,73,212", deep: "#781f7a", hue: "289deg"
-  },
-  {
-    title: "Malher", year: "2025", slug: "malher",
-    role: { es: "Modelado y texturizado", en: "Modeling & texturing" },
-    desc: {
-      es: "Video promocional de Malher para la dinámica «Lo pago con pollitos»: un concepto jugado, resuelto en 3D con claridad.",
-      en: "Promotional video for Malher's «Lo pago con pollitos» activation — a playful concept, resolved cleanly in 3D."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Rigger", name: "Cristian Rangel", ig: "cristianrangel65" },
-      { role: "Modelado/Textura", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Juan Aguirre", ig: "juanpa_00_" },
-      { role: "Motion", name: "Alejandra Monroy", ig: "mariamoon_roy" },
-    ],
-    accent: "#49d483", rgb: "73,212,131", deep: "#1f7a45", hue: "136deg"
-  },
-  {
-    title: "Miniso Navidad", year: "2024", slug: "miniso-navidad",
-    role: { es: "Iluminación, animación y render", en: "Lighting, animation & render" },
-    desc: {
-      es: "Producción virtual para la campaña «Una Navidad en el Mundo Miniso», en colaboración con @juandam___: luces, animación y render al servicio de una historia cálida.",
-      en: "Virtual production for the «A Christmas in the Miniso World» campaign, with @juandam___ — lights, animation and render in service of a warm story."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Modelado/Iluminación", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Juan Aguirre", ig: "juanpa_00_" },
-      { role: "Motion", name: "Alejandra Monroy", ig: "mariamoon_roy" },
-    ],
-    accent: "#d4a449", rgb: "212,164,73", deep: "#7a5a1f", hue: "30deg"
-  },
-  {
-    title: "Mirringo", year: "2024", slug: "mirringo",
-    role: { es: "Modelado, texturizado e iluminación", en: "Modeling, texturing & lighting" },
-    desc: {
-      es: "«¡Qué suerte, yo tengo un gato!»: reimaginar momentos icónicos de la historia… con un gato siempre presente. Humor, detalle y mucho cariño en 3D.",
-      en: "«¡Qué suerte, yo tengo un gato!»: reimagining iconic moments in history — with a cat always in the frame. Humor, detail, and a lot of 3D love."
-    },
-    credits: [
-      { role: "Productora", name: "Antiestático", ig: "antiestatico" },
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Pedro Pinto", ig: "peter.pint" },
-      { role: "Director de Fotografía", name: "Andres Mauricio", ig: "comanchedp1" },
-      { role: "Director de VFX", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Productora ejecutiva", name: "Juliana Cordoba", ig: "juli_cordoba_barcelona" },
-      { role: "Productora ejecutiva", name: "Ingrid Beschiroff", ig: "ibeschiroff" },
-      { role: "Productora ejecutiva", name: "Ana Greiffenstein", ig: "ana_greiffenstein" },
-      { role: "Coordinación", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Coordinación", name: "Caterine Moreno", ig: "caterinemoreno_" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado/Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Modelado/Iluminación", name: "Camiloh", ig: "camiloohh" },
-      { role: "Rigger", name: "Cristian Rangel", ig: "cristianrangel65" },
-      { role: "Animación 3D", name: "Angie Rubiano", ig: "/" },
-      { role: "Composición", name: "Tomas Madrid", ig: "tomasmadridv" },
-      { role: "Composición", name: "Juan Aguirre", ig: "juanpa_00_" },
-      { role: "Composición", name: "Camilo Rueda", ig: "micro_vfx" },
-      { role: "Motion", name: "Alejandra Monroy", ig: "mariamoon_roy" },
-    ],
-    accent: "#49d49f", rgb: "73,212,159", deep: "#1f7a57", hue: "148deg"
-  },
-  {
-    title: "MP3 Emilia", year: "2024", slug: "mp3-emilia",
-    role: { es: "Animación", en: "Animation" },
-    desc: {
-      es: "Visuales para el segundo álbum de Emilia: animación con identidad propia y un pulso que acompaña la música.",
-      en: "Visuals for Emilia's second album — animation with its own identity and a pulse that follows the music."
-    },
-    credits: [
-      { role: "Dirección", name: "Julia Conde", ig: "julitaconde" },
-      { role: "Producción", name: "ANESTESIA", ig: "anestesia.av" },
-      { role: "Producción Ejecutiva", name: "Nicolas Ballve", ig: "nicoballve" },
-      { role: "Producción Ejecutiva", name: "Tute Ballve", ig: "tuteballve" },
-      { role: "Producción General", name: "Euge", ig: "eugetewes" },
-      { role: "Dirección de Arte", name: "Melanie Anton", ig: "melanieantondef" },
-      { role: "AD", name: "Bruno Adamovsky", ig: "brunoada" },
-      { role: "DOP", name: "Franco D'Alessandro", ig: "fran.dalessa" },
-      { role: "Jefe Producción Rodaje", name: "Santi Goldfarb", ig: "santi.goldfarb" },
-      { role: "Estilismo", name: "Dav Martens", ig: "davmartens" },
-      { role: "Estilismo", name: "CHINA", ig: "chinaajazmin" },
-      { role: "Pelo emi", name: "uan Manuel", ig: "juanmacativa" },
-      { role: "Mkp emi", name: "Juicy Makeup", ig: "juicymakeup" },
-      { role: "Mngmt", name: "Guadalupe Alvear", ig: "guadyalvear" },
-      { role: "Producción post", name: "ivanna Watnik", ig: "_darussian" },
-      { role: "Coordinadora post", name: "Belen Murillo", ig: "belumurillo" },
-      { role: "Lead vfxs y edit", name: "Nicola Martins", ig: "nic0martins" },
-      { role: "Dirección de arte gráfico", name: "Victoria", ig: "victoria.scratch" },
-      { role: "Edición", name: "Angel", ig: "angelisonfire" },
-      { role: "Color", name: "Franco D'Alessandro", ig: "fran.dalessa" },
-      { role: "Diseño", name: "Yai Salinas", ig: "yaisalinas" },
-      { role: "Diseño", name: "Tomás Callegaro", ig: "tomicalle.art" },
-      { role: "Diseño", name: "Marcus", ig: "marcuscus3d" },
-      { role: "Diseño", name: "Maritimar", ig: "m4ritimar" },
-      { role: "Diseño", name: "Karina Lizeth", ig: "karinalizeth.motion" },
-      { role: "Diseño", name: "Lozax", ig: "lozax.pixel" },
-      { role: "Diseño", name: "Nestor Vassallo", ig: "__nesva" },
-      { role: "Diseño Personajes", name: "P0ompui", ig: "p0ompui" },
-      { role: "Diseño Personajes", name: "Juani", ig: "juxni" },
-      { role: "Diseño Personajes", name: "Victoria", ig: "victoria.scratch" },
-      { role: "Lead 3D", name: "Criswallss", ig: "criswallss" },
-      { role: "Lead 3D", name: "Camiloh", ig: "camiloohh" },
-    ],
-    accent: "#4981d4", rgb: "73,129,212", deep: "#1f447a", hue: "207deg"
-  },
-  {
-    title: "Paloma Mami", year: "2025", slug: "paloma-mami",
-    role: { es: "Generalista 3D", en: "3D generalist" },
-    desc: {
-      es: "Visuales para el álbum Códigos de Muñeka de Paloma Mami.",
-      en: "Visuals for Paloma Mami's Códigos de Muñeka album."
-    },
-    credits: [
-      { role: "Dirección", name: "Camila Grandi", ig: "camigrandi" },
-      { role: "Dirección Creativa", name: "Palomamami", ig: "palomamami" },
-      { role: "Dirección de Arte", name: "Julia Conde", ig: "julitaconde" },
-      { role: "Producción", name: "Ivanna Watnik", ig: "_darussian" },
-      { role: "Producción Ejecutiva", name: "Yani Molina", ig: "yanimolina" },
-      { role: "Productor Técnico", name: "Sebastián Alvarez", ig: "sebaastian_alvareez" },
-      { role: "Director Asistente", name: "Coty Nuñez", ig: "_gattodelcoty" },
-      { role: "Director de Fotografía", name: "Vicente Mayo", ig: "elvicho_mayo" },
-      { role: "Diseñador de Producción (En Set)", name: "Fernanda Garriga", ig: "fernandagarriga" },
-      { role: "Atrezzo", name: "Sebastian", ig: "medescubrieron" },
-      { role: "Estilista", name: "", ig: "pau_poblet_" },
-      { role: "Maquillaje", name: "Sofía Castillo", ig: "sofiacastillo_" },
-      { role: "Peluquería", name: "Iván Barria", ig: "ivanbarriaa" },
-      { role: "Jefe de Post Producción", name: "Paula Braga", ig: "paubm1" },
-      { role: "Productor VFX/Post", name: "Paula Braga", ig: "paubm1" },
-      { role: "Productor VFX/Post", name: "BM Estudio", ig: "bmestudio.arg" },
-      { role: "Post Producción Adicional", name: "Vanina Balza", ig: "vanibal" },
-      { role: "Post Producción Adicional", name: "Felipe Monguillot", ig: "shotbyfmb" },
-      { role: "Diseño Gráfico", name: "Mar", ig: "m4ritimar" },
-      { role: "Títulos y Letras", name: "Rena", ig: "renadrago" },
-      { role: "Edición", name: "Camila Grandi", ig: "camigrandi" },
-      { role: "Color", name: "Felipe Martínez", ig: "felipemartinezu" },
-      { role: "Color", name: "Wemakecolor", ig: "wemakecolor" },
-      { role: "Artista VFX/3D", name: "Andre", ig: "byandregv" },
-      { role: "Artista VFX/3D", name: "Criswalls", ig: "criswallss" },
-      { role: "Artista VFX/3D", name: "Camiloh", ig: "camiloohh" },
-      { role: "Artista VFX/3D", name: "Rodo Gautier", ig: "rodogautier" },
-      { role: "Artista VFX/3D", name: "Carlos Bruno De Paoli", ig: "carlosbrunodepaoli" },
-      { role: "Creación, Modelado y Texturizado de Personaje 3D", name: "Bruno", ig: "brunoderavioli" },
-      { role: "Discográfica", name: "Sony Music Latin", ig: "sonymusiclatin" },
-      { role: "Equipo Discográfica", name: "Adrian", ig: "_adrian88" },
-      { role: "Equipo Discográfica", name: "Alessandro Martino", ig: "amartinophoto" },
-    ],
-    accent: "#6349d4", rgb: "99,73,212", deep: "#301f7a", hue: "242deg"
-  },
-  {
-    title: "Piscilago", year: "2023", slug: "piscilago",
-    role: { es: "Modelado, iluminación y render", en: "Modeling, lighting & render" },
-    desc: {
-      es: "Animación 3D para el parque acuático Piscilago: una experiencia inmersiva que invita a meterse al agua… aunque sea desde la pantalla.",
-      en: "3D animation for the Piscilago water park — an immersive experience that makes you want to jump in, even from the screen."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Director", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Productora ejecutiva", name: "Sara Lucía", ig: "soysaralucia" },
-      { role: "Dirección de Fotografía", name: "Andres Mauricio", ig: "comanchedp1" },
-      { role: "Coordinacion", name: "Angie Aguilar", ig: "anngie_aguilar" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Grooming 3D", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Grooming 3D", name: "Luis Fernando", ig: "theredman3d" },
-      { role: "Modelado y Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Modelado y Iluminación", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Modelado y textura", name: "Stiven Valero", ig: "stiven_valero_mora" },
-      { role: "Modelado y textura", name: "Lorena Bosch", ig: "bosch_lore" },
-      { role: "Rigger", name: "Cristian Rangel", ig: "cristianrangel65" },
-      { role: "Animación 3D", name: "Angie Rubiano", ig: "/" },
-      { role: "Artista 3D", name: "Julian Puentes", ig: "julianpuentes_cg" },
-      { role: "Composición", name: "Tomas Madrid", ig: "tomasmadridv" },
-      { role: "Motion y composición", name: "Alejandra Monroy", ig: "mariamoon_roy" },
-      { role: "Motion y composición", name: "Sebastian", ig: "yosoyundonnadie" },
-      { role: "Arte Conceptual", name: "Andres Aponte", ig: "andresaponteart" },
-      { role: "Arte Conceptual", name: "Harry Villamil", ig: "harry_villamil" },
-      { role: "Vestuario", name: "Becca Hayer", ig: "beccahayer" },
-      { role: "Vestuario", name: "Miss Tutu", ig: "misstutustyling" },
-    ],
-  },
-  {
-    title: "Polet", year: "2025", slug: "polet",
-    role: { es: "Modelado y texturizado", en: "Modeling & texturing" },
-    desc: {
-      es: "Promocional de Polet Cremhelado para el lanzamiento de la paleta Chocoavellana: modelado y textura con ganas de morder la pantalla.",
-      en: "Polet Cremhelado promo for the Chocoavellana bar launch — modeling and texture that make you want to bite the screen."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Dirección", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Dirección", name: "Zárate", ig: "zaratefilm" },
-      { role: "Dirección de Fotografía", name: "Juan Sáchica", ig: "juanpablosachica" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Productora ejecutiva", name: "Sara Lucía", ig: "soysaralucia" },
-      { role: "Gaffer", name: "Jah War", ig: "jahwar.luz" },
-      { role: "Color", name: "Sisifo", ig: "sisifo___" },
-      { role: "Styling", name: "Daniela Tokio", ig: "daniela__tokio" },
-      { role: "Dirección de Fotografía", name: "Andres Mauricio", ig: "comanchedp1" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Animación 3D", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Iluminación y Render", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Modelado y Textura", name: "Camiloh", ig: "Camiloohh" },
-      { role: "Composición", name: "Tomas Madrid", ig: "tomasmadridv" },
-    ],
-    accent: "#49d4ba", rgb: "73,212,186", deep: "#1f7a69", hue: "160deg"
-  },
-  {
-    title: "Quatro", year: "2025", slug: "quatro",
-    role: { es: "Motion graphics", en: "Motion graphics" },
-    desc: {
-      es: "Motion graphics para Quatro Colombia: ácida, dulce y burbujeante… igual que la bebida. Ritmo y color de punta a punta.",
-      en: "Motion graphics for Quatro Colombia — sour, sweet and bubbly, just like the drink. Rhythm and color end to end."
-    },
-    credits: [
-      { role: "Productora", name: "Diptongo", ig: "diptongomediagroup" },
-      { role: "Dirección", name: "Sebastian Mejía", ig: "sebasgambeta" },
-      { role: "Productora ejecutiva", name: "Margarita Montoya", ig: "marge_marge1111" },
-      { role: "Coordinacion", name: "Nathaly Díaz", ig: "nathalydiaz18" },
-      { role: "Director de animación", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Animación 3D", name: "Camiloh", ig: "camiloohh" },
-      { role: "Animación 3D", name: "Mauricio Nieto", ig: "dr_pancreas" },
-      { role: "Modelado y Iluminación", name: "Arturo Martinez", ig: "arturo_3d_stuff" },
-      { role: "Simulación de Liquidos", name: "Giorgio Zegarra", ig: "giorgiovfx" },
-      { role: "Composición", name: "Tomas Madrid", ig: "tomasmadridv" },
-    ],
-    accent: "#49d3d4", rgb: "73,211,212", deep: "#1f7a7a", hue: "171deg"
-  },
-  {
-    title: "Rutinario", year: "2026", slug: "rutinario", cat: "ia",
-    role: { es: "Artista de IA", en: "AI Artist" },
-    desc: {
-      es: "Video musical generado por completo con IA: Rutinario. Una pieza que prueba hasta dónde puede llegar una narrativa hecha a base de prompts… y criterio.",
-      en: "Fully AI-generated music video: Rutinario. A piece that tests how far a prompt-driven narrative can go — with real creative judgment."
-    },
-    credits: [
-      { role: "Hecho Por", name: "Camiloh", ig: "Camiloohh" },
-    ],
-    accent: "#d4496b", rgb: "212,73,107", deep: "#7a1f35", hue: "336deg"
-  },
-  {
-    title: "Santorini", year: "2024", slug: "santorini",
-    role: { es: "Modelado y texturizado", en: "Modeling & texturing" },
-    desc: {
-      es: "Video musical Santorini de Beéle, Jason Derulo y Farruko.",
-      en: "Santorini music video by Beéle, Jason Derulo and Farruko."
-    },
-    credits: [
-      { role: "Productora", name: "Absnt.absnt", ig: "absnt.absnt" },
-      { role: "Dirección", name: "Martín Seipel", ig: "martinseipel" },
-      { role: "Dirección y Modelado 3D", name: "Criswalls", ig: "criswallss" },
-      { role: "VFX y Color", name: "Andrés Alexander", ig: "eeffes" },
-      { role: "Cover Art", name: "Andrés Alexander", ig: "eeffes" },
-      { role: "Cover Art", name: "Leomar Solorzano", ig: "leomarswar" },
-      { role: "Soporte 3D", name: "Mariano Rojas", ig: "rxxjvs" },
-      { role: "Diseño de Titulo", name: "Leomar Solorzano", ig: "leomarswar" },
-      { role: "Diseño de Personajes", name: "Camiloh", ig: "camiloohh" },
-      { role: "Coordinación y Supervisión Visual", name: "Rocio", ig: "rotaboada" },
-      { role: "Coordinación y Supervisión Visual", name: "Guille Pozzi", ig: "guillepozzi" }
-    ],
-    accent: "#499dd4", rgb: "73,157,212", deep: "#1f567a", hue: "195deg"
-  },
-  {
-    title: "Sech Visuales", year: "2025", slug: "sech-visuales",
-    role: { es: "Generalista 3D", en: "3D generalist" },
-    desc: {
-      es: "Visuales para la gira Antes del Tour de Sech: un set 3D versátil, listo para girar de ciudad en ciudad.",
-      en: "Visuals for Sech's Antes del Tour run — a versatile 3D set, ready to travel city to city."
-    },
-    credits: [
-      { role: "Dirección Creativa", name: "Arturo Martinez", ig: "arturomartinez.oficial" },
-      { role: "Artista 3D", name: "Camiloh", ig: "camiloohh" },
-    ],
-    accent: "#d449bd", rgb: "212,73,189", deep: "#7a1f6b", hue: "301deg"
-  },
-  {
-    title: "STAY x PITBULLYING", year: "2024", slug: "staypit",
-    role: { es: "Generalista 3D", en: "3D generalist" },
-    desc: {
-      es: "Animación 3D para la colección de ropa XZLY 777",
-      en: "3D Animation for the XZLY 777 Clothing Collection"
-    },
-    credits: [
-      { role: "Dirección Creativa", name: "Camiloh", ig: "camiloh" },
-      { role: "Dirección Creativa", name: "Pitbullying", ig: "pitbullying_clothing" },
-      { role: "Dirección Creativa", name: "Stay", ig: "stay.cloo" },
-      { role: "Artista 3D", name: "Camiloh", ig: "Camiloohh" },
-    ],
-    accent: "#435fd8", rgb: "73,75,212", deep: "#121485", hue: "230deg"
-  },
-];
+/* Data lives in data/proyectos.json
+   Edit that file to add/update titles, years, credits, roles, etc.
+   Schema per project:
+     title, year, slug, folder (R2 dir, default TITLE UPPERCASE),
+     cat? ("ia" | omitted=3d),
+     role: { es, en }, desc: { es, en },
+     credits: [{ role, name, ig? }],
+     accent, rgb, deep, hue
+   Media: {mediaBase}/{folder}/cover.webp | 01.webp–06.webp | video.mp4
+*/
 
-/* Sorted alphabetically (already in order above; keep sort at runtime for safety) */
-PROJECTS.sort((a, b) => a.title.localeCompare(b.title, "es", { sensitivity: "base" }));
+let PROJECTS = [];
+const PROJECTS_URL = "data/proyectos.json";
+let MEDIA_BASE = "https://media.camiloh.co";
+
+function projectFolder(p) {
+  if (p && p.folder) return String(p.folder).trim();
+  return String((p && p.title) || "").trim().toUpperCase();
+}
+
+function mediaUrl(p, file) {
+  return MEDIA_BASE.replace(/\/$/, "") + "/" + encodeURIComponent(projectFolder(p)).replace(/'/g, "%27") + "/" + file;
+}
+
+function sortProjects() {
+  PROJECTS.sort((a, b) => a.title.localeCompare(b.title, "es", { sensitivity: "base" }));
+}
+
+function loadProjects() {
+  return fetch(PROJECTS_URL, { cache: "no-cache" })
+    .then((res) => {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then((data) => {
+      const list = Array.isArray(data) ? data : (data && data.projects);
+      if (!Array.isArray(list)) throw new Error("JSON sin lista de proyectos");
+      if (data && typeof data.mediaBase === "string" && data.mediaBase.trim()) {
+        MEDIA_BASE = data.mediaBase.trim().replace(/\/$/, "");
+      }
+      PROJECTS = list;
+      sortProjects();
+    });
+}
+
+function showLoadError() {
+  const skel = document.querySelector(".proj-skeleton");
+  if (skel) {
+    skel.classList.add("is-error");
+    skel.innerHTML = '<p class="tw-load-error">No se pudieron cargar los proyectos.</p>';
+  }
+}
+
 
 const UI = {
   es: {
@@ -779,7 +177,7 @@ function buildList() {
     // Lazy: only set data-src; real src loads on hover / near viewport
     const img = document.createElement("img");
     img.dataset.index = i;
-    img.dataset.src = "assets/img/" + p.slug + ".jpg";
+    img.dataset.src = mediaUrl(p, "cover.webp");
     img.alt = p.title;
     img.decoding = "async";
     img.loading = "lazy";
@@ -807,8 +205,9 @@ function buildCreditsHtml(p) {
     list.forEach((c) => {
       const role = c.role || "";
       const name = c.name || "";
-      const ig = (c.ig || "").replace(/^@/, "");
-      const igHtml = ig
+      const ig = (c.ig || "").replace(/^@/, "").trim();
+      const igOk = ig && ig !== "/" && /^[\w.]+$/.test(ig);
+      const igHtml = igOk
         ? ' — <a href="https://www.instagram.com/' + ig + '/" target="_blank" rel="noopener">@' + ig + "</a>"
         : "";
       rows +=
@@ -844,7 +243,7 @@ function buildPanel(idx) {
     const num = pad(n);
     frames +=
       '<div class="pp-shot">' +
-      '<img data-src="assets/img/' + p.slug + "-frame" + num + '.jpg" alt="' + p.title + " " + num + '" loading="lazy">' +
+      '<img data-src="' + mediaUrl(p, num + ".webp") + '" alt="' + p.title + " " + num + '" loading="lazy">' +
       '<span class="pp-shot-num">' + num + "</span>" +
       '<span class="pp-shot-zoom">' + t("expand") + "</span>" +
       "</div>";
@@ -865,8 +264,8 @@ function buildPanel(idx) {
     '<div class="pp-spot"></div>' +
     '<span class="pp-reel">' + t("reel") + "</span>" +
     '<div class="pp-media-wrap"><div class="pp-media">' +
-    '<video class="pp-video video-js vjs-glass" id="ppVideo-' + idx + '" muted loop playsinline controls preload="none" poster="assets/img/' + p.slug + '.jpg">' +
-    '<source data-src="assets/video/' + p.slug + '.mp4" type="video/mp4">' +
+    '<video class="pp-video video-js vjs-glass" id="ppVideo-' + idx + '" muted loop playsinline controls preload="none" poster="' + mediaUrl(p, "cover.webp") + '">' +
+    '<source data-src="' + mediaUrl(p, "video.mp4") + '" type="video/mp4">' +
     "</video></div></div>" +
     '<div class="pp-head"><div class="pp-head-left">' +
     '<h2 class="pp-title gradient-text">' + p.title + "</h2>" +
@@ -1626,12 +1025,40 @@ function observeRows() {
   });
 }
 
-buildList();
-bindRowEvents();
-bindFilter();
-bindLangToggle();
-bindEasterEggs();
-applyLanguage();
-magnetize("nav ul a", 0.35);
-bindCursorHover("a, .proj-row, .preview-frame, .filter-pill, .lang-toggle, .pp-credits-toggle");
-track("page_view", { page: "trabajos" });
+function bindNavToggle() {
+  const btn = document.getElementById("navToggle");
+  const nav = document.querySelector("nav");
+  if (!btn || !nav) return;
+  const setOpen = (open) => {
+    nav.classList.toggle("is-open", open);
+    document.body.classList.toggle("nav-open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+    btn.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+  };
+  btn.addEventListener("click", () => setOpen(!nav.classList.contains("is-open")));
+  nav.querySelectorAll("ul a").forEach((a) => {
+    a.addEventListener("click", () => setOpen(false));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && nav.classList.contains("is-open")) setOpen(false);
+  });
+}
+
+function boot() {
+  bindNavToggle();
+  bindFilter();
+  bindLangToggle();
+  bindEasterEggs();
+  applyLanguage();
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  if (!coarse) magnetize("nav ul a", 0.35);
+  bindCursorHover("a, .proj-row, .preview-frame, .filter-pill, .lang-toggle, .pp-credits-toggle, .nav-toggle");
+  track("page_view", { page: "trabajos" });
+}
+
+loadProjects()
+  .then(boot)
+  .catch((err) => {
+    console.error("[trabajos] " + PROJECTS_URL, err);
+    showLoadError();
+  });
