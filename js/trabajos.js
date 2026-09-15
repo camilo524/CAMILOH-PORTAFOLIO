@@ -931,7 +931,10 @@ function applyLanguage() {
   const pfHome = document.getElementById("pfHome");
   if (pfHome) pfHome.textContent = t("footerHome");
   const pfDiscord = document.getElementById("pfDiscord");
-  if (pfDiscord) pfDiscord.textContent = t("footerDiscord");
+  if (pfDiscord) {
+    const label = pfDiscord.querySelector("span") || pfDiscord;
+    label.textContent = t("footerDiscord");
+  }
 
   // rebuild list with translated roles
   const keepFilter = activeFilter;
