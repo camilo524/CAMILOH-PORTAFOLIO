@@ -63,8 +63,7 @@ const UI = {
     navAbout: "Sobre mí",
     navWork: "Trabajos",
     navGallery: "Galería",
-    navContact: "Contacto",
-    navArt: "Tu arte",
+    navArt: "Pinta",
     heroTag: "Mi trabajo",
     heroTitle: "Proyectos",
     heroSub: "Índice de proyectos, agradecimientos a todos los involucrados.",
@@ -84,6 +83,10 @@ const UI = {
     madeWith: "Creado con amor",
     footerLeft: "© 2026 Camiloh — Artista 3D",
     footerRight: "Rodado en 35mm · Colombia",
+    footerMadeWith: 'Hecho con <span class="pf-heart" aria-hidden="true">♥</span> Claude y Grok',
+    footerAbout: "Sobre mí",
+    footerHome: "Inicio",
+    footerDiscord: "Únete a mi Discord",
     frame: "Frame",
     credits: "Créditos",
     creditsEmpty: "Créditos por agregar.",
@@ -92,8 +95,7 @@ const UI = {
     navAbout: "About",
     navWork: "Work",
     navGallery: "Gallery",
-    navContact: "Contact",
-    navArt: "Your art",
+    navArt: "Paint",
     heroTag: "My work",
     heroTitle: "Projects",
     heroSub: "A project index, thanks to everyone involved.",
@@ -113,6 +115,10 @@ const UI = {
     madeWith: "Made with love",
     footerLeft: "© 2026 Camiloh — 3D Artist",
     footerRight: "Shot on 35mm · Colombia",
+    footerMadeWith: 'Made with <span class="pf-heart" aria-hidden="true">♥</span> Claude and Grok',
+    footerAbout: "About",
+    footerHome: "Home",
+    footerDiscord: "Join my Discord",
     frame: "Frame",
     credits: "Credits",
     creditsEmpty: "Credits to be added.",
@@ -306,6 +312,10 @@ function buildPanel(idx) {
 function createRainFX(canvas, accentRgb) {
   const ctx = canvas.getContext("2d");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // touch devices generally sit behind weaker GPUs and have smaller panels,
+  // so give them a lighter version of the same effect instead of the full
+  // desktop particle count / pixel density.
+  const isCoarse = window.matchMedia("(hover: none), (pointer: coarse)").matches;
   let w = 0, h = 0, rafId = null, drops = [], bokehs = [], t0 = 0;
   const base = accentRgb || "226,59,34";
   const lighten = (rgb, amt) =>
@@ -314,7 +324,7 @@ function createRainFX(canvas, accentRgb) {
 
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, isCoarse ? 1.5 : 2);
     w = rect.width; h = rect.height;
     canvas.width = w * dpr; canvas.height = h * dpr;
     canvas.style.width = w + "px"; canvas.style.height = h + "px";
@@ -329,9 +339,12 @@ function createRainFX(canvas, accentRgb) {
     };
   }
   function seed() {
-    const count = Math.min(Math.max(Math.round((w * h) / 8500), 60), 150);
+    const divisor = isCoarse ? 13000 : 8500;
+    const maxCount = isCoarse ? 90 : 150;
+    const count = Math.min(Math.max(Math.round((w * h) / divisor), 40), maxCount);
     drops = Array.from({ length: count }, () => spawnDrop(true));
-    bokehs = Array.from({ length: 6 }, (_, i) => ({
+    const bokehCount = isCoarse ? 3 : 6;
+    bokehs = Array.from({ length: bokehCount }, (_, i) => ({
       x: Math.random() * w, y: Math.random() * h,
       r: 70 + Math.random() * 100, base: 0.09 + Math.random() * 0.09,
       c: colors[i % colors.length],
@@ -512,6 +525,9 @@ function openProjectPanel(idx) {
   loadPanelMedia(p);
   p.panelEl.classList.add("open");
   document.body.style.overflow = "hidden";
+  // lets background canvases/animations (stars, halation) know they
+  // can stop working: they're fully hidden behind the modal anyway.
+  document.body.classList.add("panel-open");
   if (p.player) { p.player.currentTime(0); p.player.play(); }
   else if (p.video) { p.video.currentTime = 0; p.video.play().catch(() => {}); }
   if (p.rainFX) p.rainFX.start();
@@ -522,6 +538,11 @@ function closeProjectPanel(idx) {
   if (!p) return;
   p.panelEl.classList.remove("open");
   document.body.style.overflow = "";
+  // only drop panel-open once no other panel is left open
+  const anyOpen = Object.values(projectPanels).some(
+    (panel) => panel.panelEl.classList.contains("open")
+  );
+  if (!anyOpen) document.body.classList.remove("panel-open");
   if (p.player) p.player.pause();
   else if (p.video) p.video.pause();
   if (p.rainFX) p.rainFX.stop();
@@ -628,7 +649,13 @@ function magnetize(selector, strength) {
     });
   }
   function frame() {
-    if (document.hidden) { requestAnimationFrame(frame); return; }
+    // same idea as the document.hidden check below: while a project panel
+    // is open, this canvas is fully covered by the modal, so keep skipping
+    // frames instead of drawing (and computing) something nobody can see.
+    if (document.hidden || document.body.classList.contains("panel-open")) {
+      requestAnimationFrame(frame);
+      return;
+    }
     tick++;
     ctx.clearRect(0, 0, w, h);
     drawConstellation((s) => s.base * (0.6 + 0.4 * Math.sin(tick * s.speed + s.phase)));
@@ -822,7 +849,7 @@ function applyLanguage() {
 
   // nav
   const navLinks = document.querySelectorAll("nav ul a");
-  const navKeys = ["navAbout", "navWork", "navGallery", "navContact", "navArt"];
+  const navKeys = ["navAbout", "navWork", "navGallery", "navArt"];
   navLinks.forEach((a, i) => { if (navKeys[i]) a.textContent = t(navKeys[i]); });
 
   // hero
@@ -894,6 +921,17 @@ function applyLanguage() {
     fl.textContent = t("footerLeft").replace(/^©\s*/, "");
   }
   if (fr) fr.textContent = t("footerRight");
+
+  const pfLead = document.getElementById("pfMadeWith");
+  if (pfLead) pfLead.innerHTML = t("footerMadeWith");
+  const pfAbout = document.getElementById("pfAbout");
+  if (pfAbout) pfAbout.textContent = t("footerAbout");
+  const pfGallery = document.getElementById("pfGallery");
+  if (pfGallery) pfGallery.textContent = t("navGallery");
+  const pfHome = document.getElementById("pfHome");
+  if (pfHome) pfHome.textContent = t("footerHome");
+  const pfDiscord = document.getElementById("pfDiscord");
+  if (pfDiscord) pfDiscord.textContent = t("footerDiscord");
 
   // rebuild list with translated roles
   const keepFilter = activeFilter;
