@@ -72,7 +72,6 @@
 
 <canvas id="stars"></canvas>
 <div id="mouseGlow"></div>
-<div id="grain"></div>
 <div id="halation"></div>
 <div id="cursor"></div>
 
@@ -91,8 +90,7 @@
     <li><a href="index.html#sobre-mi">Sobre mí</a></li>
     <li><a href="trabajos.html">Trabajos</a></li>
     <li><a href="galeria.html">Galería</a></li>
-    <li><a href="index.html#contacto">Contacto</a></li>
-    <li><a href="tu-arte.html">Tu arte</a></li>
+    <li><a href="tu-arte.html">Pinta</a></li>
   </ul>
 </nav>
 
@@ -150,11 +148,43 @@
   </div>
 </div>
 
-<footer>
-  <span><span class="easter-copy" aria-hidden="true">©</span> <span id="footerLeftText">2026 Camiloh — Artista 3D</span></span>
-  <span id="footerRightText">Rodado en 35mm · Colombia</span>
+<footer class="pf-footer">
+  <div class="pf-backdrop" aria-hidden="true"></div>
+
+  <div class="pf-col pf-col-brand">
+    <h3 class="pf-brand">Camiloh</h3>
+    <p class="pf-madewith" id="pfMadeWith">Hecho con <span class="pf-heart" aria-hidden="true">♥</span> Claude y Grok</p>
+    <div class="pf-social">
+      <a class="pf-social-link" href="https://www.instagram.com/camiloohh/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+      </a>
+      <a class="pf-social-link" href="mailto:contact@camiloh.co" aria-label="Email">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 6.5 8 6.5 8-6.5"/></svg>
+      </a>
+      <a class="pf-social-link" href="https://www.linkedin.com/in/camilooh" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="8" cy="6.6" r=".6" fill="currentColor" stroke="none"/><line x1="8" y1="10" x2="8" y2="17"/><line x1="12" y1="10" x2="12" y2="17"/><path d="M12 13c0-1.8 1-3 2.6-3S17 11.2 17 13v4"/></svg>
+      </a>
+    </div>
+    <p class="pf-copy">
+      <span class="easter-copy" aria-hidden="true">©</span> <span id="footerLeftText">2026 Camiloh — Artista 3D</span>
+    </p>
+    <p class="pf-shot-on" id="footerRightText">Rodado en 35mm · Colombia</p>
+  </div>
+
+  <div class="pf-col pf-col-links">
+    <a class="pf-link" href="about.html" id="pfAbout">About</a>
+    <a class="pf-link" href="galeria.html" id="pfGallery">Galería</a>
+    <!-- reserved: a future privacy-policy page. Left blank on purpose so
+         this column keeps the same height as the one next to it. -->
+    <span class="pf-link pf-link-empty" aria-hidden="true"></span>
+  </div>
+
+  <div class="pf-col pf-col-links">
+    <a class="pf-link" href="index.html" id="pfHome">Inicio</a>
+    <a class="pf-link" href="https://retro.camiloh.co" target="_blank" rel="noopener">Retro</a>
+    <a class="pf-link" href="https://discord.gg/QAtMaM4yg" target="_blank" rel="noopener" id="pfDiscord">Únete a mi Discord</a>
+  </div>
 </footer>
-<p class="code-thanks">Hecho con ayuda de <strong>Claude</strong> y <strong>Grok</strong></p>
 
 <script defer src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
