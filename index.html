@@ -10,7 +10,6 @@
 <meta name="theme-color" content="#1036C1">
 <link rel="canonical" href="https://camiloh.co/">
 
-<!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_CO">
 <meta property="og:title" content="Camiloh — Artista 3D">
@@ -21,7 +20,6 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 
-<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Camiloh — Artista 3D">
 <meta name="twitter:description" content="Portfolio de animación 3D, CGI, VFX e IA.">
@@ -30,6 +28,9 @@
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://media.camiloh.co" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,400;14..32,700&display=swap" rel="stylesheet">
 <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
 <link rel="stylesheet" href="css/index.css">
@@ -60,23 +61,16 @@
 </head>
 <body>
 
-<!-- Birds canvas (day sky particles) -->
 <canvas id="birds" aria-hidden="true"></canvas>
-
-<!-- Soft halation for day warmth -->
 <div id="halation" aria-hidden="true"></div>
-
-<!-- Custom cursor -->
 <div id="cursor"></div>
 
-<!-- Lightbox -->
 <div id="lightbox">
   <span class="lb-close">CERRAR ✕</span>
   <img src="" alt="">
   <div class="lb-caption"></div>
 </div>
 
-<!-- NAV (same as trabajos) -->
 <nav>
   <a class="logo" href="index.html">Camiloh</a>
   <button type="button" class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navMenu">
@@ -90,67 +84,59 @@
   </ul>
 </nav>
 
-<!-- ═══════════════════════════════════════════
-     HERO — golden ratio centered first view
-═══════════════════════════════════════════ -->
 <header class="hero" id="inicio">
+  <div class="hero-cover-full" aria-hidden="true">
+    <img src="https://media.camiloh.co/OBRAS/portada.webp" alt="" width="1920" height="1080" loading="eager" decoding="async">
+    <div class="hero-cover-fade"></div>
+  </div>
   <div class="hero-inner">
-    <h1 class="hero-name headline">CAMILOH</h1>
+    <h1 class="hero-name">CAMILOH</h1>
     <p class="hero-role">ARTISTA 3D</p>
     <p class="hero-welcome">Bienvenido a mi portafolio, este es un recorrido de todos mis proyectos, ideas y historias que he contado, cuento y contaré…</p>
-    <div class="hero-cover-wrap">
-      <img class="hero-cover" src="https://media.camiloh.co/portada.webp" alt="Portada — Camiloh" width="1600" height="900" loading="eager" decoding="async" onerror="this.src='assets/img/og-trabajos.jpg'">
-    </div>
   </div>
 </header>
 
-<!-- ═══════════════════════════════════════════
-     CLIENTS STRIP
-═══════════════════════════════════════════ -->
 <section class="clients" id="clientes">
   <p class="clients-note">Trabajé con más de 22 clientes, y contando…</p>
-  <div class="marquee-wrap" aria-label="Clientes y colaboraciones">
+  <div class="marquee-bar" aria-label="Clientes y colaboraciones">
     <div class="marquee-track">
-      <span>Miniso</span>
-      <span>Auntie Anne's</span>
-      <span>Avianca</span>
-      <span>Cyzone</span>
-      <span>Club Colombia</span>
-      <span>Four Loko</span>
-      <span>Holcim</span>
-      <span>La Joaqui</span>
-      <span>Knak</span>
-      <span>Juegos Suramericanos</span>
-      <span>Lil Peep</span>
-      <span>Sech</span>
-      <span>Emilia</span>
-      <span>Lit Killah</span>
-      <span>Paloma Mami</span>
-      <span>Polet</span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/miniso.webp" alt="" class="client-logo" loading="lazy"><span>Miniso</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/auntie-annes.webp" alt="" class="client-logo" loading="lazy"><span>Auntie Anne's</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/avianca.webp" alt="" class="client-logo" loading="lazy"><span>Avianca</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/cyzone.webp" alt="" class="client-logo" loading="lazy"><span>Cyzone</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/club-colombia.webp" alt="" class="client-logo" loading="lazy"><span>Club Colombia</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/four-loko.webp" alt="" class="client-logo" loading="lazy"><span>Four Loko</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/holcim.webp" alt="" class="client-logo" loading="lazy"><span>Holcim</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/la-joaqui.webp" alt="" class="client-logo" loading="lazy"><span>La Joaqui</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/knak.webp" alt="" class="client-logo" loading="lazy"><span>Knak</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/juegos-suramericanos.webp" alt="" class="client-logo" loading="lazy"><span>Juegos Suramericanos</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/lil-peep.webp" alt="" class="client-logo" loading="lazy"><span>Lil Peep</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/sech.webp" alt="" class="client-logo" loading="lazy"><span>Sech</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/emilia.webp" alt="" class="client-logo" loading="lazy"><span>Emilia</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/lit-killah.webp" alt="" class="client-logo" loading="lazy"><span>Lit Killah</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/paloma-mami.webp" alt="" class="client-logo" loading="lazy"><span>Paloma Mami</span></span>
+      <span class="client-item"><img src="https://media.camiloh.co/ICONOS/polet.webp" alt="" class="client-logo" loading="lazy"><span>Polet</span></span>
       <!-- duplicate for seamless loop -->
-      <span>Miniso</span>
-      <span>Auntie Anne's</span>
-      <span>Avianca</span>
-      <span>Cyzone</span>
-      <span>Club Colombia</span>
-      <span>Four Loko</span>
-      <span>Holcim</span>
-      <span>La Joaqui</span>
-      <span>Knak</span>
-      <span>Juegos Suramericanos</span>
-      <span>Lil Peep</span>
-      <span>Sech</span>
-      <span>Emilia</span>
-      <span>Lit Killah</span>
-      <span>Paloma Mami</span>
-      <span>Polet</span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/miniso.webp" alt="" class="client-logo" loading="lazy"><span>Miniso</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/auntie-annes.webp" alt="" class="client-logo" loading="lazy"><span>Auntie Anne's</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/avianca.webp" alt="" class="client-logo" loading="lazy"><span>Avianca</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/cyzone.webp" alt="" class="client-logo" loading="lazy"><span>Cyzone</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/club-colombia.webp" alt="" class="client-logo" loading="lazy"><span>Club Colombia</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/four-loko.webp" alt="" class="client-logo" loading="lazy"><span>Four Loko</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/holcim.webp" alt="" class="client-logo" loading="lazy"><span>Holcim</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/la-joaqui.webp" alt="" class="client-logo" loading="lazy"><span>La Joaqui</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/knak.webp" alt="" class="client-logo" loading="lazy"><span>Knak</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/juegos-suramericanos.webp" alt="" class="client-logo" loading="lazy"><span>Juegos Suramericanos</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/lil-peep.webp" alt="" class="client-logo" loading="lazy"><span>Lil Peep</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/sech.webp" alt="" class="client-logo" loading="lazy"><span>Sech</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/emilia.webp" alt="" class="client-logo" loading="lazy"><span>Emilia</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/lit-killah.webp" alt="" class="client-logo" loading="lazy"><span>Lit Killah</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/paloma-mami.webp" alt="" class="client-logo" loading="lazy"><span>Paloma Mami</span></span>
+      <span class="client-item" aria-hidden="true"><img src="https://media.camiloh.co/ICONOS/polet.webp" alt="" class="client-logo" loading="lazy"><span>Polet</span></span>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     RECORRIDO (stats)
-═══════════════════════════════════════════ -->
 <section class="recorrido" id="recorrido">
   <h2 class="section-title headline">Recorrido</h2>
   <div class="stats-row">
@@ -169,14 +155,10 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     MI PORTAFOLIO — 6 trabajos (3+3)
-═══════════════════════════════════════════ -->
 <section class="portfolio" id="portafolio">
   <h2 class="section-title headline">Mi portafolio</h2>
   <p class="section-sub">Selección de proyectos. Haz clic para ver el panel completo.</p>
   <div class="portfolio-grid">
-    <!-- Row 1 -->
     <button type="button" class="folio-card" data-slug="staypit" data-folder="STAY X PITBULLYING" data-title="STAY x PITBULLYING">
       <div class="folio-img">
         <img src="https://media.camiloh.co/STAY%20X%20PITBULLYING/cover.webp" alt="STAY x PITBULLYING" loading="lazy" decoding="async">
@@ -204,7 +186,6 @@
         <span class="folio-year">2024</span>
       </div>
     </button>
-    <!-- Row 2 -->
     <button type="button" class="folio-card" data-slug="late-del-sur" data-folder="LATE DEL SUR" data-title="Late del Sur">
       <div class="folio-img">
         <img src="https://media.camiloh.co/LATE%20DEL%20SUR/cover.webp" alt="Late del Sur" loading="lazy" decoding="async">
@@ -238,9 +219,6 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     OBRAS — 6 imágenes 16:9
-═══════════════════════════════════════════ -->
 <section class="obras" id="obras">
   <h2 class="section-title headline">Obras</h2>
   <p class="section-sub">Piezas sueltas, exploraciones y frames que merecen su propio espacio.</p>
@@ -266,9 +244,6 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     PROGRAMAS
-═══════════════════════════════════════════ -->
 <section class="tools" id="programas">
   <h2 class="section-title headline">Programas</h2>
   <p class="section-sub">Las herramientas con las que construyo cada frame.</p>
@@ -281,9 +256,6 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     PRÓLOGO / CTA
-═══════════════════════════════════════════ -->
 <section class="prologue" id="contacto">
   <div class="prologue-inner">
     <h2 class="prologue-title headline">Cada historia necesita su frame</h2>
@@ -299,9 +271,6 @@
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════
-     FOOTER (same as trabajos)
-═══════════════════════════════════════════ -->
 <footer class="pf-footer">
   <div class="pf-backdrop" aria-hidden="true"></div>
   <div class="pf-panel">
