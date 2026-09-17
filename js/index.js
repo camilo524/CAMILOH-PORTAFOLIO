@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════
    Camiloh — Index (Day) v5
-   Birds · cursor · white panels · full project panels (trabajos parity)
+   Birds · cursor · fluted panels · full project panels (trabajos parity)
 ═══════════════════════════════════════════════ */
 
 (function () {
@@ -279,7 +279,7 @@
     } else {
       list.forEach((c) => {
         const ig = (c.ig || "").replace(/^@/, "").trim();
-        const igOk = ig && ig !== "/" && /^[\\w.]+$/.test(ig);
+        const igOk = ig && ig !== "/" && /^[\w.]+$/.test(ig);
         const igHtml = igOk
           ? ' — <a href="https://www.instagram.com/' + ig + '/" target="_blank" rel="noopener">@' + ig + "</a>"
           : "";
@@ -342,9 +342,9 @@
       '<p class="pp-desc">' + tr(p.desc) + "</p>" +
       '</div><div class="pp-head-right">' +
       '<div class="pp-meta-block"><span class="pp-meta-label">Año</span>' +
-      '<span class="pp-year gradient-text">' + (p.year || "") + "</span></div>' +
+      '<span class="pp-year gradient-text">' + (p.year || "") + '</span></div>' +
       '<div class="pp-meta-block"><span class="pp-meta-label">Rol</span>' +
-      '<span class="pp-role">' + tr(p.role) + "</span></div>' +
+      '<span class="pp-role">' + tr(p.role) + '</span></div>' +
       "</div></div>" +
       buildCreditsHtml(p) +
       '<div class="pp-gallery">' + frames + "</div>" +
