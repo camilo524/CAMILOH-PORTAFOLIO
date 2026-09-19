@@ -12,19 +12,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,400;14..32,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/index.css?v=8">
-<link rel="stylesheet" href="css/index-panels.css?v=8">
+<link rel="stylesheet" href="css/index.css">
+<link rel="stylesheet" href="css/index-overrides.css">
 <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet">
 </head>
 <body>
 <canvas id="birds" aria-hidden="true"></canvas>
 <div id="halation" aria-hidden="true"></div>
-<div id="clouds" aria-hidden="true"></div>
-<div id="rays" aria-hidden="true"></div>
-<div class="ribbon ribbon-1" aria-hidden="true"></div>
-<div class="ribbon ribbon-2" aria-hidden="true"></div>
-<div class="ribbon ribbon-3" aria-hidden="true"></div>
-
 <div id="cursor"></div>
 <div id="lightbox"><span class="lb-close">CERRAR ✕</span><img src="" alt=""><div class="lb-caption"></div></div>
 <nav>
@@ -42,38 +36,15 @@
     <img src="https://media.camiloh.co/OBRAS/portada.webp" alt="" width="1920" height="1080" loading="eager" decoding="async">
     <div class="hero-cover-fade"></div>
   </div>
-  <div class="hero-stage">
-    <div class="hero-copy">
-      <p class="hero-kicker">HOLA, SOY</p>
-      <h1 class="hero-name">Camiloh</h1>
-      <p class="hero-role">3D GENERALIST &amp; CGI ARTIST</p>
-      <p class="hero-welcome">Creo mundos, personajes y experiencias visuales que conectan ideas con emociones.</p>
-      <a href="#portafolio" class="hero-cta">
-        <span class="hero-cta-icon" aria-hidden="true">↓</span>
-        <span>DESCUBRE MI TRABAJO</span>
-      </a>
-    </div>
-    <aside class="stats-glass reveal" aria-label="En números">
-      <p class="stats-kicker">EN NÚMEROS</p>
-      <div class="stats-grid">
-        <div class="stat-item">
-          <span class="stat-num">5</span>
-          <span class="stat-label">AÑOS DE<br>EXPERIENCIA</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num">+10M</span>
-          <span class="stat-label">VISITAS<br>GENERADAS</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num">+22</span>
-          <span class="stat-label">CLIENTES<br>SATISFECHOS</span>
-        </div>
-      </div>
-    </aside>
+  <div class="hero-inner">
+    <h1 class="hero-name">CAMILOH</h1>
+    <p class="hero-role">ARTISTA 3D</p>
+    <p class="hero-welcome">Bienvenido a mi portafolio, este es un recorrido de todos mis proyectos, ideas y historias que he contado, cuento y contaré…</p>
   </div>
 </header>
 <section class="clients" id="clientes">
-  <div class="clients-panel fluted-glass" aria-label="Clientes y colaboraciones">
+  <div class="clients-panel" aria-label="Clientes y colaboraciones">
+    <h2 class="clients-title">+22 CLIENTES</h2>
     <div class="marquee-bar">
       <div class="marquee-track">
       <span class="client-item"><img src="https://media.camiloh.co/ICONOS/miniso.webp" alt="" class="client-logo" loading="lazy"><span class="client-name">MINISO</span></span>
@@ -144,85 +115,80 @@
     </div>
   </div>
 </section>
-<section class="portfolio" id="portafolio">
-  <div class="section-sheet">
-  <p class="pf-kicker reveal">MI</p>
-  <h2 class="section-title headline reveal">Portafolio</h2>
-  <p class="section-sub reveal">SELECCIÓN DE PROYECTOS. HAZ CLIC PARA VER EL PANEL COMPLETO.</p>
-  <div class="portfolio-grid">
-    <button type="button" class="folio-card reveal" data-slug="staypit"><div class="folio-img"><img src="https://media.camiloh.co/STAY%20X%20PITBULLYING/cover.webp" alt="STAY x PITBULLYING" loading="lazy"></div><div class="folio-meta"><span class="folio-title">STAY x PITBULLYING</span><span class="folio-year">2024</span><span class="folio-arrow" aria-hidden="true">→</span></div></button>
-    <button type="button" class="folio-card reveal" data-slug="paloma-mami"><div class="folio-img"><img src="https://media.camiloh.co/PALOMA%20MAMI/cover.webp" alt="Paloma Mami" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Paloma Mami</span><span class="folio-year">2025</span><span class="folio-arrow" aria-hidden="true">→</span></div></button>
-    <button type="button" class="folio-card reveal" data-slug="miniso-navidad"><div class="folio-img"><img src="https://media.camiloh.co/MINISO%20NAVIDAD/cover.webp" alt="Miniso Navidad" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Miniso Navidad</span><span class="folio-year">2024</span><span class="folio-arrow" aria-hidden="true">→</span></div></button>
-    <button type="button" class="folio-card reveal" data-slug="late-del-sur"><div class="folio-img"><img src="https://media.camiloh.co/LATE%20DEL%20SUR/cover.webp" alt="Late del Sur" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Late del Sur</span><span class="folio-year">2026</span><span class="folio-arrow" aria-hidden="true">→</span></div></button>
-    <button type="button" class="folio-card reveal" data-slug="club-colombia"><div class="folio-img"><img src="https://media.camiloh.co/CLUB%20COLOMBIA/cover.webp" alt="Club Colombia" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Club Colombia</span><span class="folio-year">2026</span><span class="folio-arrow" aria-hidden="true">→</span></div></button>
-    <button type="button" class="folio-card reveal" data-slug="piscilago"><div class="folio-img"><img src="https://media.camiloh.co/PISCILAGO/cover.webp" alt="Piscilago" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Piscilago</span><span class="folio-year">2025</span><span class="folio-arrow" aria-hidden="true">→</span></div></button>
-  </div>
-  <div class="portfolio-cta"><a href="trabajos.html" class="btn-ghost">Ver todos los trabajos →</a></div>
+<section class="recorrido" id="recorrido">
+  <h2 class="section-title headline">Recorrido</h2>
+  <div class="stats-row">
+    <div class="stat-card"><span class="stat-num">5</span><span class="stat-label">años de experiencia</span></div>
+    <div class="stat-card"><span class="stat-num">+10M</span><span class="stat-label">visitas generadas</span></div>
+    <div class="stat-card"><span class="stat-num">+22</span><span class="stat-label">clientes satisfechos</span></div>
   </div>
 </section>
-<section class="obras" id="obras">
-  <div class="section-sheet">
-  <h2 class="section-title headline reveal">Obras</h2>
-  <p class="section-sub reveal">Piezas sueltas, exploraciones y frames que merecen su propio espacio.</p>
-  <div class="obras-grid">
-    <figure class="obra-card reveal"><img src="https://media.camiloh.co/ALOHA/01.webp" alt="Obra 01" loading="lazy"></figure>
-    <figure class="obra-card reveal"><img src="https://media.camiloh.co/AMPER/01.webp" alt="Obra 02" loading="lazy"></figure>
-    <figure class="obra-card reveal"><img src="https://media.camiloh.co/AVIANCA/01.webp" alt="Obra 03" loading="lazy"></figure>
-    <figure class="obra-card reveal"><img src="https://media.camiloh.co/BROKIX/01.webp" alt="Obra 04" loading="lazy"></figure>
-    <figure class="obra-card reveal"><img src="https://media.camiloh.co/FOUR%20LOKO/01.webp" alt="Obra 05" loading="lazy"></figure>
-    <figure class="obra-card reveal"><img src="https://media.camiloh.co/HOLCIM/01.webp" alt="Obra 06" loading="lazy"></figure>
+<section class="portfolio" id="portafolio">
+  <h2 class="section-title headline">Mi portafolio</h2>
+  <p class="section-sub">Selección de proyectos. Haz clic para ver el panel completo.</p>
+  <div class="portfolio-grid">
+    <button type="button" class="folio-card" data-slug="staypit"><div class="folio-img"><img src="https://media.camiloh.co/STAY%20X%20PITBULLYING/cover.webp" alt="STAY x PITBULLYING" loading="lazy"></div><div class="folio-meta"><span class="folio-title">STAY x PITBULLYING</span><span class="folio-year">2024</span></div></button>
+    <button type="button" class="folio-card" data-slug="paloma-mami"><div class="folio-img"><img src="https://media.camiloh.co/PALOMA%20MAMI/cover.webp" alt="Paloma Mami" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Paloma Mami</span><span class="folio-year">2025</span></div></button>
+    <button type="button" class="folio-card" data-slug="miniso-navidad"><div class="folio-img"><img src="https://media.camiloh.co/MINISO%20NAVIDAD/cover.webp" alt="Miniso Navidad" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Miniso Navidad</span><span class="folio-year">2024</span></div></button>
+    <button type="button" class="folio-card" data-slug="late-del-sur"><div class="folio-img"><img src="https://media.camiloh.co/LATE%20DEL%20SUR/cover.webp" alt="Late del Sur" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Late del Sur</span><span class="folio-year">2026</span></div></button>
+    <button type="button" class="folio-card" data-slug="club-colombia"><div class="folio-img"><img src="https://media.camiloh.co/CLUB%20COLOMBIA/cover.webp" alt="Club Colombia" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Club Colombia</span><span class="folio-year">2026</span></div></button>
+    <button type="button" class="folio-card" data-slug="piscilago"><div class="folio-img"><img src="https://media.camiloh.co/PISCILAGO/cover.webp" alt="Piscilago" loading="lazy"></div><div class="folio-meta"><span class="folio-title">Piscilago</span><span class="folio-year">2025</span></div></button>
   </div>
+  <div class="portfolio-cta"><a href="trabajos.html" class="btn-ghost">Ver todos los trabajos →</a></div>
+</section>
+<section class="obras" id="obras">
+  <h2 class="section-title headline">Obras</h2>
+  <p class="section-sub">Piezas sueltas, exploraciones y frames que merecen su propio espacio.</p>
+  <div class="obras-grid">
+    <figure class="obra-card"><img src="https://media.camiloh.co/ALOHA/01.webp" alt="Obra 01" loading="lazy"></figure>
+    <figure class="obra-card"><img src="https://media.camiloh.co/AMPER/01.webp" alt="Obra 02" loading="lazy"></figure>
+    <figure class="obra-card"><img src="https://media.camiloh.co/AVIANCA/01.webp" alt="Obra 03" loading="lazy"></figure>
+    <figure class="obra-card"><img src="https://media.camiloh.co/BROKIX/01.webp" alt="Obra 04" loading="lazy"></figure>
+    <figure class="obra-card"><img src="https://media.camiloh.co/FOUR%20LOKO/01.webp" alt="Obra 05" loading="lazy"></figure>
+    <figure class="obra-card"><img src="https://media.camiloh.co/HOLCIM/01.webp" alt="Obra 06" loading="lazy"></figure>
   </div>
 </section>
 <section class="tools" id="programas">
-  <div class="section-sheet">
-  <h2 class="section-title headline reveal">Programas</h2>
-  <p class="section-sub reveal">Las herramientas con las que construyo cada frame.</p>
+  <h2 class="section-title headline">Programas</h2>
+  <p class="section-sub">Las herramientas con las que construyo cada frame.</p>
   <div class="tools-row">
-    <div class="tool-pill fluted-glass reveal">Blender</div>
-    <div class="tool-pill fluted-glass reveal">Marvelous Designer</div>
-    <div class="tool-pill fluted-glass reveal">Cinema 4D</div>
-    <div class="tool-pill fluted-glass reveal">Houdini</div>
-    <div class="tool-pill fluted-glass reveal">After Effects</div>
-    <div class="tool-pill fluted-glass reveal">Unreal Engine</div>
-    <div class="tool-pill fluted-glass reveal">Midjourney</div>
-    <div class="tool-pill fluted-glass reveal">Runway</div>
-  </div>
+    <div class="tool-pill">Blender</div><div class="tool-pill">Marvelous Designer</div><div class="tool-pill">DaVinci Resolve</div><div class="tool-pill">EmberGen</div><div class="tool-pill">Houdini / Highsfield</div>
   </div>
 </section>
-<section class="prologue" id="sobre-mi">
-  <div class="prologue-inner section-sheet">
-    <h2 class="prologue-title reveal">Sobre mí</h2>
-    <p class="prologue-text reveal">Soy Camiloh, artista 3D colombiano. Diseño mundos, personajes y piezas publicitarias que combinan técnica, emoción e inteligencia artificial.</p>
-    <div class="prologue-actions reveal">
-      <a href="trabajos.html" class="btn-primary">Ver trabajos</a>
-      <a href="/cdn-cgi/l/email-protection#781b17160c191b0c381b191511141710561b17" class="btn-ghost">Contacto</a>
+<section class="prologue" id="contacto">
+  <div class="prologue-inner">
+    <h2 class="prologue-title headline">Cada historia necesita su frame</h2>
+    <p class="prologue-text">Si tienes una idea que aún no tiene forma, un producto que merece brillar o una canción que pide un mundo propio, aquí estoy. Trabajo con agencias, marcas y artistas para convertir referencias sueltas en imágenes que se quedan. Escribeme y contemos la siguiente historia juntos.</p>
+    <div class="prologue-actions">
+      <a href="mailto:contact@camiloh.co" class="btn-primary">Escribirme</a>
+      <a href="trabajos.html" class="btn-ghost">Ver trabajos</a>
     </div>
   </div>
 </section>
 <footer class="pf-footer">
   <div class="pf-panel">
-    <div class="pf-col-brand">
-      <div class="pf-brand">Camiloh <svg class="pf-brand-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg></div>
-      <p class="pf-madewith">Hecho con <span class="pf-heart">♥</span> en Colombia</p>
+    <div class="pf-col pf-col-brand">
+      <h3 class="pf-brand">Camiloh<svg class="pf-brand-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg></h3>
+      <p class="pf-madewith">Hecho con <span class="pf-heart">♥</span> Claude y Grok</p>
       <div class="pf-social">
         <a class="pf-social-link" href="https://www.instagram.com/camiloohh/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg></a>
-        <a class="pf-social-link" href="https://www.behance.net/camiloh" target="_blank" rel="noopener" aria-label="Behance"><svg viewBox="0 0 24 24"><path d="M8.5 7H5v10h3.5c2.2 0 3.5-1.2 3.5-3 0-1.3-.7-2.2-1.8-2.6 1-.4 1.6-1.3 1.6-2.4 0-1.7-1.2-2.9-3.3-2.9zm-.2 4.5H7V8.8h1.3c.9 0 1.4.4 1.4 1.1s-.5 1.1-1.4 1.1zm.1 4H7v-2.7h1.4c1 0 1.5.5 1.5 1.3s-.5 1.4-1.5 1.4zM19 11.2c-1.1-.4-1.5-.7-1.5-1.2 0-.6.5-1 1.3-1 .9 0 1.4.4 1.6 1l1.3-.5c-.4-1.2-1.5-2-2.9-2-1.8 0-3 1-3 2.5 0 1.5 1 2.1 2.3 2.5 1.1.4 1.5.7 1.5 1.3 0 .7-.6 1.1-1.5 1.1-1 0-1.7-.5-1.9-1.3l-1.4.5c.4 1.5 1.7 2.3 3.3 2.3 2 0 3.3-1.1 3.3-2.7 0-1.5-1-2.2-2.4-2.7zM14 7h4v1.2h-4V7z"/></svg></a>
+        <a class="pf-social-link" href="mailto:contact@camiloh.co" aria-label="Email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 6.5 8 6.5 8-6.5"/></svg></a>
+        <a class="pf-social-link" href="https://www.linkedin.com/in/camilooh" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="8" cy="6.6" r=".6" fill="currentColor" stroke="none"/><line x1="8" y1="10" x2="8" y2="17"/><line x1="12" y1="10" x2="12" y2="17"/><path d="M12 13c0-1.8 1-3 2.6-3S17 11.2 17 13v4"/></svg></a>
       </div>
-      <p class="pf-copy">© 2026 Camiloh</p>
-      <p class="pf-shot-on">Rodado en 22mm</p>
+      <p class="pf-copy">© 2026 Camiloh — Artista 3D</p>
+      <p class="pf-shot-on">Rodado en 35mm · Colombia</p>
     </div>
-    <div class="pf-col-nav">
-      <a class="pf-link" href="index.html#sobre-mi">Sobre mí</a>
+    <nav class="pf-col pf-col-nav" aria-label="Enlaces">
+      <a class="pf-link" href="index.html">Inicio</a>
       <a class="pf-link" href="trabajos.html">Trabajos</a>
       <a class="pf-link" href="galeria.html">Galería</a>
-      <a class="pf-link" href="Camilo_Paint.html">Pinta</a>
-    </div>
+      <a class="pf-link" href="https://retro.camiloh.co" target="_blank" rel="noopener">Retro</a>
+      <a class="pf-link pf-link-discord" href="https://discord.gg/QAtMaM4yg" target="_blank" rel="noopener"><span>Únete a mi Discord</span></a>
+    </nav>
   </div>
 </footer>
-<script defer src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-<script defer src="js/index.js?v=8"></script>
+<script defer src="js/index.js"></script>
 </body>
 </html>
