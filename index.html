@@ -119,28 +119,7 @@
   </div>
 </section>
 
-<!-- PANEL DE NÚMEROS -->
-<section class="stats-band">
-  <div class="hero-stats" data-animate="stats">
-    <span class="hero-stats-eyebrow">En números</span>
-    <div class="hero-stats-row">
-      <div class="hero-stats-item">
-        <span class="hero-stats-num">5</span>
-        <span class="hero-stats-label">años de<br>experiencia</span>
-      </div>
-      <div class="hero-stats-item">
-        <span class="hero-stats-num">+10M</span>
-        <span class="hero-stats-label">visitas<br>generadas</span>
-      </div>
-      <div class="hero-stats-item">
-        <span class="hero-stats-num">+22</span>
-        <span class="hero-stats-label">clientes<br>satisfechos</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- SHOWCASE -->
+<!-- SHOWCASE + NÚMEROS encima de la imagen -->
 <section class="banded-showcase">
   <div class="banded-frame" data-animate="panel">
     <div class="banded-stripes" style="background-image:url('https://media.camiloh.co/OBRAS/portada.webp')"></div>
@@ -149,12 +128,30 @@
       <span>Glass Motion</span>
       <span>2026</span>
     </div>
+    <!-- números a la derecha, sobre la imagen -->
+    <div class="hero-stats banded-stats" data-animate="stats">
+      <span class="hero-stats-eyebrow">En números</span>
+      <div class="hero-stats-row">
+        <div class="hero-stats-item">
+          <span class="hero-stats-num">5</span>
+          <span class="hero-stats-label">años de<br>experiencia</span>
+        </div>
+        <div class="hero-stats-item">
+          <span class="hero-stats-num">+10M</span>
+          <span class="hero-stats-label">visitas<br>generadas</span>
+        </div>
+        <div class="hero-stats-item">
+          <span class="hero-stats-num">+22</span>
+          <span class="hero-stats-label">clientes<br>satisfechos</span>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <main class="content">
 
-  <!-- PORTAFOLIO bento (sin Piscilago) -->
+  <!-- PORTAFOLIO bento -->
   <section class="portfolio bento" id="portafolio">
     <header class="bento-head">
       <span class="bento-eyebrow">Mi</span>
@@ -186,30 +183,36 @@
     <div class="bento-cta"><a href="trabajos.html" class="btn-ghost">Ver todos los trabajos →</a></div>
   </section>
 
-  <!-- OBRAS bento (sin 05 y 06) -->
-  <section class="obras bento" id="obras">
-    <header class="bento-head">
-      <span class="bento-eyebrow">Exploraciones</span>
-      <h2 class="bento-title">Obras</h2>
-      <p class="bento-sub">Piezas sueltas, exploraciones y frames que merecen su propio espacio.</p>
-    </header>
-    <div class="bento-grid obras-bento">
-      <figure class="obra-card bento-lg" data-animate="card"><img src="https://media.camiloh.co/ALOHA/01.webp" alt="Obra 01" loading="lazy"></figure>
-      <figure class="obra-card bento-sm" data-animate="card"><img src="https://media.camiloh.co/AMPER/01.webp" alt="Obra 02" loading="lazy"></figure>
-      <figure class="obra-card bento-sm" data-animate="card"><img src="https://media.camiloh.co/AVIANCA/01.webp" alt="Obra 03" loading="lazy"></figure>
-      <figure class="obra-card bento-md" data-animate="card"><img src="https://media.camiloh.co/BROKIX/01.webp" alt="Obra 04" loading="lazy"></figure>
-    </div>
-  </section>
-
-  <section class="tools" id="programas">
-    <div class="tools-panel" data-animate="panel">
-      <span class="bento-eyebrow">Caja de herramientas</span>
-      <h2 class="bento-title">Programas</h2>
-      <p class="bento-sub">Las herramientas con las que construyo cada frame.</p>
-      <div class="tools-row">
-        <div class="tool-pill">Blender</div><div class="tool-pill">Marvelous Designer</div><div class="tool-pill">DaVinci Resolve</div><div class="tool-pill">EmberGen</div><div class="tool-pill">Houdini / Highsfield</div>
+  <!-- OBRAS + PROGRAMAS lado a lado -->
+  <section class="obras-tools-row" id="obras">
+    <div class="obras bento obras-col">
+      <header class="bento-head">
+        <span class="bento-eyebrow">Exploraciones</span>
+        <h2 class="bento-title">Obras</h2>
+        <p class="bento-sub">Piezas sueltas, exploraciones y frames que merecen su propio espacio.</p>
+      </header>
+      <div class="bento-grid obras-bento">
+        <figure class="obra-card bento-lg" data-animate="card"><img src="https://media.camiloh.co/ALOHA/01.webp" alt="Obra 01" loading="lazy"></figure>
+        <figure class="obra-card bento-sm" data-animate="card"><img src="https://media.camiloh.co/AMPER/01.webp" alt="Obra 02" loading="lazy"></figure>
+        <figure class="obra-card bento-sm" data-animate="card"><img src="https://media.camiloh.co/AVIANCA/01.webp" alt="Obra 03" loading="lazy"></figure>
+        <figure class="obra-card bento-md" data-animate="card"><img src="https://media.camiloh.co/BROKIX/01.webp" alt="Obra 04" loading="lazy"></figure>
       </div>
     </div>
+
+    <aside class="tools tools-col" id="programas">
+      <div class="tools-panel" data-animate="panel">
+        <span class="bento-eyebrow">Caja de herramientas</span>
+        <h2 class="bento-title">Programas</h2>
+        <p class="bento-sub">Las herramientas con las que construyo cada frame.</p>
+        <div class="tools-row">
+          <div class="tool-pill">Blender</div>
+          <div class="tool-pill">Marvelous Designer</div>
+          <div class="tool-pill">DaVinci Resolve</div>
+          <div class="tool-pill">EmberGen</div>
+          <div class="tool-pill">Houdini / Highsfield</div>
+        </div>
+      </div>
+    </aside>
   </section>
 
   <section class="prologue" id="contacto">
