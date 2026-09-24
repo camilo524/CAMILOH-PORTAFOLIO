@@ -82,14 +82,13 @@ body {
   width:100% !important;
   margin:0 !important;
   border-radius:0 !important;
-  background:#ffffff !important;
-  border-top:1px solid rgba(16,54,193,.06);
-  border-bottom:1px solid rgba(16,54,193,.06);
-  box-shadow:none !important;
-  backdrop-filter:none !important;
-  -webkit-backdrop-filter:none !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   overflow:hidden;
-  padding: clamp(14px, 1.8vw, 22px) 0;
+  padding: clamp(18px, 2.2vw, 28px) 0;
   mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
   z-index:2;
@@ -97,31 +96,31 @@ body {
 .clients .marquee-track{
   display:flex;
   align-items:center;
-  gap: clamp(18px, 2.4vw, 32px);
+  gap: clamp(22px, 3vw, 40px);
   width:max-content;
   animation: marqueeClients 52s linear infinite;
-  padding: 6px 24px;
+  padding: 8px 24px;
 }
 .clients .client-item{
   display:inline-flex;
   align-items:center;
-  gap:12px;
+  gap:14px;
   flex-shrink:0;
   white-space:nowrap;
 }
 .clients .client-name{
   font-family:'Soria', Georgia, serif;
   font-weight:800;
-  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-size: clamp(1.35rem, 2.8vw, 1.85rem);
   letter-spacing:.06em;
   text-transform:uppercase;
-  color:#1a1f2e; /* oscuro sobre blanco */
+  color:#1a1f2e;
   line-height:1;
-  opacity:.9;
+  opacity:1;
 }
 .clients .client-logo{
-  width: clamp(32px, 3.2vw, 40px);
-  height: clamp(32px, 3.2vw, 40px);
+  width: clamp(36px, 3.6vw, 46px);
+  height: clamp(36px, 3.6vw, 46px);
   border-radius:50%;
   object-fit:cover;
   flex-shrink:0;
@@ -130,11 +129,11 @@ body {
   box-shadow:0 2px 10px rgba(6,16,60,.08);
 }
 .clients .client-spark{
-  width: clamp(14px, 1.6vw, 18px);
-  height: clamp(14px, 1.6vw, 18px);
+  width: clamp(16px, 1.8vw, 20px);
+  height: clamp(16px, 1.8vw, 20px);
   flex-shrink:0;
-  fill:#1036C1;
-  opacity:.4;
+  fill:#1a1f2e;
+  opacity:.85;
 }
 @keyframes marqueeClients{
   0%{ transform:translateX(0); }
@@ -169,13 +168,44 @@ body {
   box-shadow: 0 24px 60px rgba(16, 54, 193, 0.12);
 }
 
-/* imagen de fondo a pantalla completa, sin máscaras ni capas de glass */
+/* Video de fondo full-bleed + Fluted Glass (SVG filter, sin CORS) */
 .banded-stripes {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: #0b1a3a;
+  border: none;
+  pointer-events: none;
+  z-index: 1;
+  /* SVG: lines + prism distortion + blur (config Paper) */
+  filter: url(#flutedGlassFilter);
+  -webkit-filter: url(#flutedGlassFilter);
+}
+/* Capa de estrías: shadows≈0.47 + highlights≈0.24 */
+.banded-fluted-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.925) 0px,
+      rgba(0, 0, 0, 0.8) 1px,
+      rgba(255, 255, 255, 0.9) 2px,
+      rgba(255, 255, 255, 0.04) 3px,
+      transparent 4px,
+      transparent 33px
+    );
+  mix-blend-mode: soft-light;
+  opacity: 0.85;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.01);
+}
+.banded-frame {
+  isolation: isolate;
 }
 .banded-stripes::before,
 .banded-stripes::after,
@@ -183,73 +213,117 @@ body {
   content: none !important;
   display: none !important;
 }
+@media (prefers-reduced-motion: reduce) {
+  .banded-stripes {
+    filter: none;
+    -webkit-filter: none;
+  }
+  .banded-fluted-overlay {
+    opacity: 0.45;
+  }
+}
 
-/* Imagen centrada → empujada a la IZQUIERDA para equilibrar con stats */
+/* Video flotante a la IZQUIERDA (frame) — SIN fluted glass */
 .banded-focus {
   position: absolute;
   top: 50%;
-  left: 38%;                    /* antes 50% */
+  left: 28%;
   transform: translate(-50%, -50%);
-  width: min(38%, 480px);
-  max-width: 480px;
+  width: min(34%, 440px);
+  max-width: 440px;
   aspect-ratio: 4 / 5;
   object-fit: cover;
+  object-position: center;
   border-radius: 4px;
   box-shadow:
     0 28px 56px rgba(0, 0, 0, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.08);
   z-index: 2;
+  background: #0b1a3a;
+  border: none;
+  pointer-events: none;
 }
 
-.banded-caption {
+/* Caption removido del HTML — estilos eliminados */
+
+/* Números: 3 paneles glass horizontales, centrados verticalmente con el frame */
+.banded-stats-row {
   position: absolute;
-  top: clamp(16px, 2.2vw, 28px);
-  left: clamp(16px, 2.2vw, 28px);
-  right: clamp(16px, 2.2vw, 28px);
+  top: 0;
+  bottom: 0;
+  right: clamp(20px, 4vw, 52px);
+  left: auto;
+  margin: auto 0;           /* centra verticalmente sin depender de transform */
+  height: fit-content;
+  z-index: 4;
   display: flex;
-  justify-content: space-between;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.88);
-  z-index: 3;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(14px, 1.8vw, 22px);
+  width: auto;
+  max-width: none;
+  /* no usar transform aquí: evita conflicto con data-animate */
+  transform: none !important;
+  opacity: 1 !important;
 }
 
-/* Números DENTRO del frame, a la DERECHA */
-.banded-stats {
-  position: absolute !important;
-  top: 50% !important;
-  right: clamp(20px, 4vw, 48px) !important;
-  left: auto !important;
-  bottom: auto !important;
-  transform: translateY(-50%);
-  width: min(340px, 34vw) !important;
-  max-width: 360px;
-  margin: 0 !important;
-  z-index: 4;
-  padding: var(--sp-3) var(--sp-4);
+.banded-stat-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: clamp(170px, 17.5vw, 240px);
+  aspect-ratio: 1 / 1;
+  min-height: clamp(170px, 17.5vw, 240px);
+  padding: clamp(22px, 2.6vw, 32px) clamp(18px, 2.2vw, 28px);
   border-radius: var(--radius-lg);
-  background: linear-gradient(158deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.08) 100%);
-  border: 1px solid rgba(255,255,255,.35);
-  box-shadow: 0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.35);
+  background: linear-gradient(158deg, rgba(255,255,255,.28) 0%, rgba(255,255,255,.1) 100%);
+  border: 1px solid rgba(255,255,255,.42);
+  box-shadow: 0 18px 44px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.45);
   backdrop-filter: blur(18px) saturate(160%);
   -webkit-backdrop-filter: blur(18px) saturate(160%);
+  transition: transform .35s ease, box-shadow .35s ease;
+  box-sizing: border-box;
 }
 
-.banded-stats .hero-stats-eyebrow {
-  color: rgba(255,255,255,.78) !important;
+.banded-stat-panel:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 52px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.5);
 }
-.banded-stats .hero-stats-num {
-  color: #ffffff !important;
-  text-shadow: 0 2px 16px rgba(0,0,0,.35) !important;
+
+.banded-stat-panel .stat-num {
+  display: block;
+  font-family: 'Soria', var(--serif);
+  font-weight: 800;
+  font-size: clamp(3rem, 5.2vw, 4.2rem);
+  line-height: 0.9;
+  color: #ffffff;
+  text-shadow: 0 2px 22px rgba(0,0,0,.5);
+  margin: 0 0 0.06em;
 }
-.banded-stats .hero-stats-label {
-  color: rgba(255,255,255,.78) !important;
+
+.banded-stat-panel .stat-main {
+  display: block;
+  font-family: 'Soria', var(--serif);
+  font-weight: 800;
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #ffffff;
+  line-height: 1.05;
+  margin: 0 0 0.12em;
+  padding: 0;
 }
-.banded-stats .hero-stats-item + .hero-stats-item::before {
-  background: linear-gradient(180deg, transparent, rgba(255,255,255,.35), transparent) !important;
+
+.banded-stat-panel .stat-sub {
+  display: block;
+  font-family: var(--mono);
+  font-size: clamp(.72rem, 1.25vw, .88rem);
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.85);
+  line-height: 1.2;
+  margin: 0;
 }
 
 /* ---------- 5. CONTENT: secciones full-width con bordes suavizados ---------- */
@@ -621,17 +695,41 @@ body {
   }
   .obras-bento .obra-card:nth-child(1){ aspect-ratio: 16/10; }
 
-  /* Showcase en mobile: imagen centrada, stats abajo al centro */
+  /* Showcase en mobile: video centrado, stats abajo en fila horizontal */
   .banded-focus {
     left: 50%;
-    width: min(52%, 420px);
+    width: min(48%, 380px);
   }
-  .banded-stats {
+  .banded-stats-row {
     top: auto !important;
-    bottom: clamp(16px, 3vw, 28px) !important;
+    bottom: clamp(14px, 2.5vw, 24px) !important;
     right: 50% !important;
-    transform: translateX(50%);
-    width: min(92%, 380px) !important;
+    left: auto !important;
+    margin: 0 !important;
+    height: auto !important;
+    transform: translateX(50%) !important;
+    flex-direction: row;
+    width: min(94%, 560px);
+    max-width: none;
+    gap: clamp(8px, 1.5vw, 12px);
+  }
+  .banded-stat-panel {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    padding: clamp(14px, 2.2vw, 20px) clamp(10px, 1.6vw, 14px);
+    justify-content: center;
+  }
+  .banded-stat-panel .stat-num {
+    font-size: clamp(2rem, 6vw, 2.6rem);
+  }
+  .banded-stat-panel .stat-main {
+    font-size: clamp(1.05rem, 2.8vw, 1.3rem);
+  }
+  .banded-stat-panel .stat-sub {
+    font-size: clamp(.62rem, 1.5vw, .75rem);
   }
 
   /* Obras + Tools pasan a una sola columna */
@@ -671,11 +769,24 @@ body {
   .banded-frame{
     max-height: 70vh;
   }
-  .hero-stats{
-    padding: var(--sp-2) var(--sp-3);
+  .banded-stats-row {
+    bottom: clamp(12px, 2vw, 20px) !important;
+    gap: 6px;
+    width: min(96%, 460px);
   }
-  .hero-stats-num{ font-size: 1.35rem; }
-  .hero-stats-label{ font-size: .56rem; }
+  .banded-stat-panel {
+    padding: 12px 8px;
+    aspect-ratio: 1 / 1;
+  }
+  .banded-stat-panel .stat-num {
+    font-size: 1.85rem;
+  }
+  .banded-stat-panel .stat-main {
+    font-size: 1rem;
+  }
+  .banded-stat-panel .stat-sub {
+    font-size: .58rem;
+  }
   .pf-panel{
     flex-direction: column;
     gap: 22px;
@@ -717,39 +828,72 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Fondo sunset (CodePen Twintails / EjadMN)
-   Quita el blanco de body y secciones
+   Fondo sunset interactivo — sol que sigue el cursor
+   Adaptado de "CSS Sunset Sunrise" (msaetre, CodePen JjqPby)
 ═══════════════════════════════════════════════════════════ */
 
 html {
-  background: #1B4979; /* fallback azul profundo */
+  background: #0b1a2e; /* fallback nocturno */
 }
 
 body {
-  background-image:
-    radial-gradient(
-      ellipse 400% 188% at 33.333% 100%,
-      rgba(203, 122, 118, 0.8) 1.5%,
-      rgba(253, 144, 104, 0.87) 6%,
-      #FFA65E 9%,
-      #FFCD7A 14%,
-      rgba(255, 238, 185, 0.53) 19%,
-      rgba(145, 179, 208, 0.05) 28%
-    ),
-    linear-gradient(
-      to top,
-      #CB7A76 1.5%,
-      #FD9068 6%,
-      #FFA65E 9%,
-      #FFCD7A 14%,
-      #FFEEB9 19%,
-      #91B3D0,
-      #689BD0,
-      #4781AB,
-      #1B4979
-    ) !important;
+  background: #0b1a2e !important;
   background-attachment: fixed !important;
-  background-color: #1B4979 !important;
+}
+
+#sunsetBg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#sunsetBg > div {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  transition: opacity .18s ease-out;
+  will-change: opacity, background;
+}
+
+/* Cielo base: degradé de día (se atenúa hacia la noche vía opacity en JS) */
+#sbSky {
+  z-index: 1;
+  background: linear-gradient(to top,
+    rgba(249,251,240,1) 10%,
+    rgba(215,253,254,1) 20%,
+    rgba(167,222,253,1) 40%,
+    rgba(110,175,255,1) 100%
+  );
+}
+
+/* Halo diurno del sol (blanco/dorado, sigue el cursor) */
+#sbSunDay { z-index: 2; }
+
+/* Sol principal (centro cálido, bordes azulados, sigue el cursor) */
+#sbSun { z-index: 3; }
+
+/* Halo de atardecer (rojo/naranja, aparece al bajar el cursor) */
+#sbSunSet { z-index: 4; }
+
+/* Resplandor del horizonte */
+#sbHorizon {
+  z-index: 5;
+  background: linear-gradient(to top,
+    rgba(212,87,43,0.9) 0%,
+    rgba(246,149,52,0.8) 20%,
+    rgba(24,75,106,0) 100%
+  );
+}
+
+/* Oscuridad que cae hacia la parte baja de la pantalla */
+#sbDarkness {
+  z-index: 6;
+  background: #000;
+  opacity: 0;
 }
 
 /* Secciones que antes eran blancas → transparentes para que se vea el sunset */
@@ -769,18 +913,22 @@ body {
   background-color: transparent !important;
 }
 
-/* Marquee: barra limpia semitransparente (sigue legible) */
+/* Marquee: sin glass, solo letras grandes + logos + estrellas negras */
 .clients .marquee-bar {
-  background: rgba(255, 255, 255, 0.12) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.18) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .clients .client-name {
   color: #1a1f2e;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.clients .client-spark {
+  fill: #1a1f2e !important;
+  opacity: .85;
 }
 
 /* Footer: que se funda con el atardecer (ya es cálido) */
