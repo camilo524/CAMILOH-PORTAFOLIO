@@ -17,6 +17,14 @@
 <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet">
 </head>
 <body>
+<div id="sunsetBg" aria-hidden="true">
+  <div id="sbSky"></div>
+  <div id="sbSunDay"></div>
+  <div id="sbSun"></div>
+  <div id="sbSunSet"></div>
+  <div id="sbHorizon"></div>
+  <div id="sbDarkness"></div>
+</div>
 <canvas id="birds" aria-hidden="true"></canvas>
 <div id="halation" aria-hidden="true"></div>
 <div id="cursor"></div>
@@ -119,31 +127,50 @@
   </div>
 </section>
 
-<!-- SHOWCASE + NÚMEROS encima de la imagen -->
+<!-- SHOWCASE + NÚMEROS encima del video (fondo con Fluted Glass CSS — sin CORS) -->
 <section class="banded-showcase">
   <div class="banded-frame" data-animate="panel">
-    <div class="banded-stripes" style="background-image:url('https://media.camiloh.co/OBRAS/portada.webp')"></div>
-    <img class="banded-focus" src="https://media.camiloh.co/OBRAS/portada.webp" alt="Glass Motion — preview" loading="lazy">
-    <div class="banded-caption">
-      <span>Glass Motion</span>
-      <span>2026</span>
-    </div>
-    <!-- números a la derecha, sobre la imagen -->
-    <div class="hero-stats banded-stats" data-animate="stats">
-      <span class="hero-stats-eyebrow">En números</span>
-      <div class="hero-stats-row">
-        <div class="hero-stats-item">
-          <span class="hero-stats-num">5</span>
-          <span class="hero-stats-label">años de<br>experiencia</span>
-        </div>
-        <div class="hero-stats-item">
-          <span class="hero-stats-num">+10M</span>
-          <span class="hero-stats-label">visitas<br>generadas</span>
-        </div>
-        <div class="hero-stats-item">
-          <span class="hero-stats-num">+22</span>
-          <span class="hero-stats-label">clientes<br>satisfechos</span>
-        </div>
+    <!-- SVG filter: fluted glass (lines + prism distortion + blur) -->
+    <svg class="fluted-svg-defs" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
+      <defs>
+        <filter id="flutedGlassFilter" x="-5%" y="-5%" width="220%" height="220%" color-interpolation-filters="sRGB">
+          <!-- franjas verticales (shape=lines, size≈0.75) -->
+          <feTurbulence type="fractalNoise" baseFrequency="0.06 0" numOctaves="1" seed="2" result="ribs"/>
+          <!-- distorsión tipo prism (distortion=0.5) -->
+          <feDisplacementMap in="SourceGraphic" in2="ribs" scale="50" xChannelSelector="R" yChannelSelector="R" result="displaced"/>
+          <!-- blur unidireccional aproximado (blur=0.61) -->
+          <feGaussianBlur in="displaced" stdDeviation="9.4 5.61" result="blurred"/>
+          <!-- un toque de contraste en bordes -->
+          <feComponentTransfer in="blurred" result="final">
+            <feFuncR type="linear" slope="1.04" intercept="-0.02"/>
+            <feFuncG type="linear" slope="1.04" intercept="-0.02"/>
+            <feFuncB type="linear" slope="1.04" intercept="-0.02"/>
+          </feComponentTransfer>
+        </filter>
+      </defs>
+    </svg>
+    <!-- video de fondo CON fluted glass -->
+    <video class="banded-stripes" src="https://media.camiloh.co/STAYPIT/video.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+    <!-- capa de highlights / shadows de las estrías -->
+    <div class="banded-fluted-overlay" aria-hidden="true"></div>
+    <!-- frame flotante SIN efecto fluted -->
+    <video class="banded-focus" src="https://media.camiloh.co/STAYPIT/video.mp4" autoplay muted loop playsinline preload="auto" aria-label="STAY x PITBULLYING — preview"></video>
+    <!-- números a la derecha, sin efecto fluted -->
+    <div class="banded-stats-row">
+      <div class="banded-stat-panel">
+        <span class="stat-num">+22</span>
+        <span class="stat-main">CLIENTES</span>
+        <span class="stat-sub">satisfechos</span>
+      </div>
+      <div class="banded-stat-panel">
+        <span class="stat-num">+10M</span>
+        <span class="stat-main">VISITAS</span>
+        <span class="stat-sub">generadas</span>
+      </div>
+      <div class="banded-stat-panel">
+        <span class="stat-num">5</span>
+        <span class="stat-main">AÑOS</span>
+        <span class="stat-sub">de experiencia</span>
       </div>
     </div>
   </div>
