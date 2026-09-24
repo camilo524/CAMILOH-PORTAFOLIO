@@ -34,9 +34,13 @@
     const APPROACH = 0.8;     // cuánto ANTES del footer empieza el atardecer (en alturas de pantalla)
     const SUNSET_LOOK = 0.5;  // look final = el de "cursor a media pantalla" (el que te gusta)
     const DAY_EDGE = 0;       // 0 = cielo de día sin oscurecer por el sol · sube (0–1) si quieres algo de viñeta
+    const DARK_DELAY = 2.2;   // >1 retrasa lo oscuro (bordes del sol, fondo, halo rojo) hacia el final del atardecer
+    const BASE_DAY = [150, 205, 250];  // color que queda detrás del cielo durante la transición (claro)
+    const BASE_NIGHT = [11, 26, 46];   // color final detrás del cielo (el azul noche de antes)
     const SUN_OPACITY = 0.5;  // intensidad fija del sol (antes cambiaba con la altura del cursor)
     const MAX_DARKNESS = 0;   // oscuridad extra al llegar al footer (0 = sin oscurecer)
 
+    const bg = document.getElementById("sunsetBg");
     const footer = document.querySelector(".pf-footer");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let w = window.innerWidth;
@@ -70,20 +74,21 @@
       const sunset = sunsetAmount();
 
       // Color del sol: blanco cálido de día → amarillo al acercarse al footer
-      const c3  = mix([255, 252, 240], [249, 249, 28],  sunset);
-      const c8  = mix([255, 244, 214], [247, 214, 46],  sunset);
+      const c3  = mix([255, 252, 240], [255, 226, 64],  sunset);
+      const c8  = mix([255, 244, 214], [252, 208, 52],  sunset);
       const c12 = mix([253, 232, 180], [248, 200, 95],  sunset);
-      const cSet = mix([255, 246, 210], [236, 255, 0],  sunset);
+      const cSet = mix([255, 246, 210], [255, 222, 40],  sunset);
 
       // Bordes oscuros del sol (gris/azul verdoso): de día casi invisibles para que el cielo se vea
       // brillante; aparecen con el atardecer
-      const edge = (DAY_EDGE + (1 - DAY_EDGE) * sunset).toFixed(3);
+      const late = Math.pow(sunset, DARK_DELAY);
+      const edge = (DAY_EDGE + (1 - DAY_EDGE) * late).toFixed(3);
 
       const posSun =
         "radial-gradient(circle at " + x + "px " + y + "px, " +
         "rgba(242,248,247,1) 0%," + rgb(c3, 1) + " 3%," + rgb(c8, 1) + " 8%," +
-        rgb(c12, 1) + " 12%,rgba(201,165,132," + edge + ") 30%,rgba(115,130,133," + edge + ") 51%," +
-        "rgba(46,97,122," + edge + ") 85%,rgba(24,75,106," + edge + ") 100%)";
+        rgb(c12, 1) + " 12%,rgba(201,165,132," + edge + ") 30%,rgba(140,128,124," + edge + ") 51%," +
+        "rgba(46,88,128," + edge + ") 85%,rgba(24,66,110," + edge + ") 100%)";
       const posSunDay =
         "radial-gradient(circle at " + x + "px " + y + "px, " +
         "rgba(252,255,251,0.9) 0%,rgba(253,250,219,0.4) 30%," +
@@ -102,9 +107,10 @@
 
       sky.style.opacity = Math.max(0, Math.min(1 - R, 0.99));
       sunDay.style.opacity = Math.max(0, 1 - R);
-      sunSet.style.opacity = Math.max(0, R - 0.2);
+      sunSet.style.opacity = Math.max(0, SUNSET_LOOK - 0.2) * late;
       horizon.style.opacity = Math.min(0.99, sunset * 0.99);
       darkness.style.opacity = MAX_DARKNESS * sunset;
+      if (bg) bg.style.backgroundColor = rgb(mix(BASE_DAY, BASE_NIGHT, late), 1);
       sun.style.opacity = SUN_OPACITY; // constante: mover el cursor no oscurece ni aclara el fondo
     }
 
