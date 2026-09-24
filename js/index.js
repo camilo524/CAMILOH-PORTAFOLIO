@@ -20,6 +20,129 @@
     });
   }
 
+  /* ---------- fondo sunset — el sol sigue el cursor; el atardecer lo controla el scroll ---------- */
+  (function () {
+    const sky = document.getElementById("sbSky");
+    const sunDay = document.getElementById("sbSunDay");
+    const sun = document.getElementById("sbSun");
+    const sunSet = document.getElementById("sbSunSet");
+    const horizon = document.getElementById("sbHorizon");
+    const darkness = document.getElementById("sbDarkness");
+    if (!sky || !sunDay || !sun || !sunSet || !horizon || !darkness) return;
+
+    /* ── Ajustes rápidos ─────────────────────────────────────────── */
+    const APPROACH = 0.8;     // cuánto ANTES del footer empieza el atardecer (en alturas de pantalla)
+    const SUNSET_LOOK = 0.5;  // look final = el de "cursor a media pantalla" (el que te gusta)
+    const DAY_EDGE = 0;       // 0 = cielo de día sin oscurecer por el sol · sube (0–1) si quieres algo de viñeta
+    const SUN_OPACITY = 0.5;  // intensidad fija del sol (antes cambiaba con la altura del cursor)
+    const MAX_DARKNESS = 0;   // oscuridad extra al llegar al footer (0 = sin oscurecer)
+
+    const footer = document.querySelector(".pf-footer");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    let x = w * 0.5;
+    let y = h * 0.32; // estado inicial: sol a media mañana, arriba del centro
+    let ticking = false;
+
+    const clamp01 = (n) => Math.max(0, Math.min(n, 1));
+    const smooth = (t) => t * t * (3 - 2 * t);
+    const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+    const rgb = (c, a) => "rgba(" + c.join(",") + "," + a + ")";
+
+    // 0 = lejos del footer (día) → 1 = footer en pantalla / final de la página (atardecer)
+    function sunsetAmount() {
+      let t;
+      if (footer) {
+        const top = footer.getBoundingClientRect().top;
+        const start = h * (1 + APPROACH);      // el footer aún está lejos, debajo de la pantalla
+        const end = h - footer.offsetHeight;   // posición del footer al llegar al final del scroll
+        t = (start - top) / Math.max(start - end, 1);
+      } else {
+        const max = document.documentElement.scrollHeight - h;
+        const p = max > 0 ? window.scrollY / max : 0;
+        t = (p - 0.7) / 0.3;
+      }
+      return smooth(clamp01(t));
+    }
+
+    function paint() {
+      const sunset = sunsetAmount();
+
+      // Color del sol: blanco cálido de día → amarillo al acercarse al footer
+      const c3  = mix([255, 252, 240], [249, 249, 28],  sunset);
+      const c8  = mix([255, 244, 214], [247, 214, 46],  sunset);
+      const c12 = mix([253, 232, 180], [248, 200, 95],  sunset);
+      const cSet = mix([255, 246, 210], [236, 255, 0],  sunset);
+
+      // Bordes oscuros del sol (gris/azul verdoso): de día casi invisibles para que el cielo se vea
+      // brillante; aparecen con el atardecer
+      const edge = (DAY_EDGE + (1 - DAY_EDGE) * sunset).toFixed(3);
+
+      const posSun =
+        "radial-gradient(circle at " + x + "px " + y + "px, " +
+        "rgba(242,248,247,1) 0%," + rgb(c3, 1) + " 3%," + rgb(c8, 1) + " 8%," +
+        rgb(c12, 1) + " 12%,rgba(201,165,132," + edge + ") 30%,rgba(115,130,133," + edge + ") 51%," +
+        "rgba(46,97,122," + edge + ") 85%,rgba(24,75,106," + edge + ") 100%)";
+      const posSunDay =
+        "radial-gradient(circle at " + x + "px " + y + "px, " +
+        "rgba(252,255,251,0.9) 0%,rgba(253,250,219,0.4) 30%," +
+        "rgba(226,219,197,0.01) 70%,rgba(226,219,197,0) 70%,rgba(201,165,132,0) 100%)";
+      const posSunSet =
+        "radial-gradient(circle at " + x + "px " + y + "px, " +
+        "rgba(254,255,255,0.8) 5%," + rgb(cSet, 1) + " 10%,rgba(253,50,41,1) 25%," +
+        "rgba(243,0,0,1) 40%,rgba(93,0,0,1) 100%)";
+
+      sun.style.background = posSun;
+      sunDay.style.background = posSunDay;
+      sunSet.style.background = posSunSet;
+
+      // Todo el color del cielo lo define SOLO el scroll (el cursor solo mueve el sol)
+      const R = sunset * SUNSET_LOOK;
+
+      sky.style.opacity = Math.max(0, Math.min(1 - R, 0.99));
+      sunDay.style.opacity = Math.max(0, 1 - R);
+      sunSet.style.opacity = Math.max(0, R - 0.2);
+      horizon.style.opacity = Math.min(0.99, sunset * 0.99);
+      darkness.style.opacity = MAX_DARKNESS * sunset;
+      sun.style.opacity = SUN_OPACITY; // constante: mover el cursor no oscurece ni aclara el fondo
+    }
+
+    function schedule() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        paint();
+        ticking = false;
+      });
+    }
+
+    paint();
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", () => {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      schedule();
+    }, { passive: true });
+    window.addEventListener("load", schedule); // las imágenes cambian la altura de la página
+
+    if (!reduce) {
+      window.addEventListener("mousemove", (e) => {
+        x = e.clientX;
+        y = e.clientY;
+        schedule();
+      }, { passive: true });
+      window.addEventListener("touchmove", (e) => {
+        if (e.touches && e.touches[0]) {
+          x = e.touches[0].clientX;
+          y = e.touches[0].clientY;
+          schedule();
+        }
+      }, { passive: true });
+    }
+  })();
+
   /* ---------- mobile nav ---------- */
   const nav = document.querySelector("nav");
   const navToggle = document.getElementById("navToggle");
