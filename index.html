@@ -12,8 +12,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,400;14..32,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/index.css">
-<link rel="stylesheet" href="css/index-overrides.css">
+<link rel="stylesheet" href="css/index-base.css">
+<link rel="stylesheet" href="css/index-sections.css">
+<link rel="stylesheet" href="css/index-effects.css">
 <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet">
 </head>
 <body>
@@ -212,31 +213,91 @@
 
   <!-- OBRAS + PROGRAMAS lado a lado -->
   <section class="obras-tools-row" id="obras">
-    <div class="obras bento obras-col">
+    <div class="obras-side">
       <header class="bento-head">
-        <span class="bento-eyebrow">Exploraciones</span>
         <h2 class="bento-title">Obras</h2>
         <p class="bento-sub">Piezas sueltas, exploraciones y frames que merecen su propio espacio.</p>
       </header>
       <div class="bento-grid obras-bento">
-        <figure class="obra-card bento-lg" data-animate="card"><img src="https://media.camiloh.co/ALOHA/01.webp" alt="Obra 01" loading="lazy"></figure>
-        <figure class="obra-card bento-sm" data-animate="card"><img src="https://media.camiloh.co/AMPER/01.webp" alt="Obra 02" loading="lazy"></figure>
-        <figure class="obra-card bento-sm" data-animate="card"><img src="https://media.camiloh.co/AVIANCA/01.webp" alt="Obra 03" loading="lazy"></figure>
-        <figure class="obra-card bento-md" data-animate="card"><img src="https://media.camiloh.co/BROKIX/01.webp" alt="Obra 04" loading="lazy"></figure>
+        <figure class="obra-card" data-animate="card"><img src="https://media.camiloh.co/ALOHA/01.webp" alt="Obra 01" loading="lazy"></figure>
+        <figure class="obra-card" data-animate="card"><img src="https://media.camiloh.co/AMPER/01.webp" alt="Obra 02" loading="lazy"></figure>
+        <figure class="obra-card" data-animate="card"><img src="https://media.camiloh.co/AVIANCA/01.webp" alt="Obra 03" loading="lazy"></figure>
+        <figure class="obra-card" data-animate="card"><img src="https://media.camiloh.co/BROKIX/01.webp" alt="Obra 04" loading="lazy"></figure>
       </div>
     </div>
 
-    <aside class="tools tools-col" id="programas">
+    <aside class="tools-side" id="programas">
       <div class="tools-panel" data-animate="panel">
         <span class="bento-eyebrow">Caja de herramientas</span>
         <h2 class="bento-title">Programas</h2>
         <p class="bento-sub">Las herramientas con las que construyo cada frame.</p>
-        <div class="tools-row">
-          <div class="tool-pill">Blender</div>
-          <div class="tool-pill">Marvelous Designer</div>
-          <div class="tool-pill">DaVinci Resolve</div>
-          <div class="tool-pill">EmberGen</div>
-          <div class="tool-pill">Houdini / Highsfield</div>
+        <div class="tools-list" role="list">
+          <div class="tool-item" role="listitem">
+            <button type="button" class="tool-toggle" aria-expanded="false">
+              <svg class="tool-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+              <span class="tool-label">Blender</span>
+              <span class="tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="tool-skills">
+              <span class="tool-skill">Modeling</span>
+              <span class="tool-skill">Texturing</span>
+              <span class="tool-skill">Lighting</span>
+              <span class="tool-skill">Animation</span>
+              <span class="tool-skill">Rendering</span>
+            </div>
+          </div>
+          <div class="tool-item" role="listitem">
+            <button type="button" class="tool-toggle" aria-expanded="false">
+              <svg class="tool-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+              <span class="tool-label">Marvelous Designer</span>
+              <span class="tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="tool-skills">
+              <span class="tool-skill">Cloth sim</span>
+              <span class="tool-skill">Patterning</span>
+              <span class="tool-skill">Draping</span>
+              <span class="tool-skill">Garment design</span>
+            </div>
+          </div>
+          <div class="tool-item" role="listitem">
+            <button type="button" class="tool-toggle" aria-expanded="false">
+              <svg class="tool-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+              <span class="tool-label">DaVinci Resolve</span>
+              <span class="tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="tool-skills">
+              <span class="tool-skill">Color grading</span>
+              <span class="tool-skill">Editing</span>
+              <span class="tool-skill">VFX compositing</span>
+              <span class="tool-skill">Audio</span>
+            </div>
+          </div>
+          <div class="tool-item" role="listitem">
+            <button type="button" class="tool-toggle" aria-expanded="false">
+              <svg class="tool-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+              <span class="tool-label">EmberGen</span>
+              <span class="tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="tool-skills">
+              <span class="tool-skill">Volumetrics</span>
+              <span class="tool-skill">Fire</span>
+              <span class="tool-skill">Smoke</span>
+              <span class="tool-skill">Explosions</span>
+            </div>
+          </div>
+          <div class="tool-item" role="listitem">
+            <button type="button" class="tool-toggle" aria-expanded="false">
+              <svg class="tool-spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/></svg>
+              <span class="tool-label">Houdini / Highsfield</span>
+              <span class="tool-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="tool-skills">
+              <span class="tool-skill">Procedural</span>
+              <span class="tool-skill">Simulation</span>
+              <span class="tool-skill">VFX</span>
+              <span class="tool-skill">Destruction</span>
+            </div>
+          </div>
         </div>
       </div>
     </aside>
