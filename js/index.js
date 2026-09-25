@@ -1,12 +1,17 @@
 /* ═══════════════════════════════════════════════
    Camiloh — Index
-   Birds (fixed) · cursor · nav · headline · portfolio · obras lightbox
+   Birds · cursor · sunset · nav · portfolio · lightbox
+   Optimizado con IntersectionObserver (videos, marquee, animaciones)
 ═══════════════════════════════════════════════ */
 
 (function () {
   "use strict";
 
-  /* ---------- custom cursor — follows mouse instantly ---------- */
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const hasIO = "IntersectionObserver" in window;
+  let onToolsToggle = null; /* lo asigna el bloque "obras: igualar alto" más abajo */
+
+  /* ---------- custom cursor ---------- */
   const cursor = document.getElementById("cursor");
   if (cursor && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
     document.addEventListener("mousemove", (e) => {
@@ -30,23 +35,21 @@
     const darkness = document.getElementById("sbDarkness");
     if (!sky || !sunDay || !sun || !sunSet || !horizon || !darkness) return;
 
-    /* ── Ajustes rápidos ─────────────────────────────────────────── */
-    const APPROACH = 0.8;     // cuánto ANTES del footer empieza el atardecer (en alturas de pantalla)
-    const SUNSET_LOOK = 0.5;  // look final = el de "cursor a media pantalla" (el que te gusta)
-    const DAY_EDGE = 0;       // 0 = cielo de día sin oscurecer por el sol · sube (0–1) si quieres algo de viñeta
-    const DARK_DELAY = 2.2;   // >1 retrasa lo oscuro (bordes del sol, fondo, halo rojo) hacia el final del atardecer
-    const BASE_DAY = [150, 205, 250];  // color que queda detrás del cielo durante la transición (claro)
-    const BASE_NIGHT = [11, 26, 46];   // color final detrás del cielo (el azul noche de antes)
-    const SUN_OPACITY = 0.5;  // intensidad fija del sol (antes cambiaba con la altura del cursor)
-    const MAX_DARKNESS = 0;   // oscuridad extra al llegar al footer (0 = sin oscurecer)
+    const APPROACH = 0.8;
+    const SUNSET_LOOK = 0.5;
+    const DAY_EDGE = 0;
+    const DARK_DELAY = 2.2;
+    const BASE_DAY = [150, 205, 250];
+    const BASE_NIGHT = [11, 26, 46];
+    const SUN_OPACITY = 0.5;
+    const MAX_DARKNESS = 0;
 
     const bg = document.getElementById("sunsetBg");
     const footer = document.querySelector(".pf-footer");
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let w = window.innerWidth;
     let h = window.innerHeight;
     let x = w * 0.5;
-    let y = h * 0.32; // estado inicial: sol a media mañana, arriba del centro
+    let y = h * 0.32;
     let ticking = false;
 
     const clamp01 = (n) => Math.max(0, Math.min(n, 1));
@@ -54,13 +57,12 @@
     const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
     const rgb = (c, a) => "rgba(" + c.join(",") + "," + a + ")";
 
-    // 0 = lejos del footer (día) → 1 = footer en pantalla / final de la página (atardecer)
     function sunsetAmount() {
       let t;
       if (footer) {
         const top = footer.getBoundingClientRect().top;
-        const start = h * (1 + APPROACH);      // el footer aún está lejos, debajo de la pantalla
-        const end = h - footer.offsetHeight;   // posición del footer al llegar al final del scroll
+        const start = h * (1 + APPROACH);
+        const end = h - footer.offsetHeight;
         t = (start - top) / Math.max(start - end, 1);
       } else {
         const max = document.documentElement.scrollHeight - h;
@@ -72,15 +74,10 @@
 
     function paint() {
       const sunset = sunsetAmount();
-
-      // Color del sol: blanco cálido de día → amarillo al acercarse al footer
       const c3  = mix([255, 252, 240], [255, 226, 64],  sunset);
       const c8  = mix([255, 244, 214], [252, 208, 52],  sunset);
       const c12 = mix([253, 232, 180], [248, 200, 95],  sunset);
       const cSet = mix([255, 246, 210], [255, 222, 40],  sunset);
-
-      // Bordes oscuros del sol (gris/azul verdoso): de día casi invisibles para que el cielo se vea
-      // brillante; aparecen con el atardecer
       const late = Math.pow(sunset, DARK_DELAY);
       const edge = (DAY_EDGE + (1 - DAY_EDGE) * late).toFixed(3);
 
@@ -102,20 +99,18 @@
       sunDay.style.background = posSunDay;
       sunSet.style.background = posSunSet;
 
-      // Todo el color del cielo lo define SOLO el scroll (el cursor solo mueve el sol)
       const R = sunset * SUNSET_LOOK;
-
       sky.style.opacity = Math.max(0, Math.min(1 - R, 0.99));
       sunDay.style.opacity = Math.max(0, 1 - R);
       sunSet.style.opacity = Math.max(0, SUNSET_LOOK - 0.2) * late;
       horizon.style.opacity = Math.min(0.99, sunset * 0.99);
       darkness.style.opacity = MAX_DARKNESS * sunset;
       if (bg) bg.style.backgroundColor = rgb(mix(BASE_DAY, BASE_NIGHT, late), 1);
-      sun.style.opacity = SUN_OPACITY; // constante: mover el cursor no oscurece ni aclara el fondo
+      sun.style.opacity = SUN_OPACITY;
     }
 
     function schedule() {
-      if (ticking) return;
+      if (ticking || document.hidden) return;
       ticking = true;
       requestAnimationFrame(() => {
         paint();
@@ -131,9 +126,9 @@
       h = window.innerHeight;
       schedule();
     }, { passive: true });
-    window.addEventListener("load", schedule); // las imágenes cambian la altura de la página
+    window.addEventListener("load", schedule);
 
-    if (!reduce) {
+    if (!reduceMotion) {
       window.addEventListener("mousemove", (e) => {
         x = e.clientX;
         y = e.clientY;
@@ -167,15 +162,16 @@
     });
   }
 
-      /* ---------- birds — entran desde la izquierda (estilo CodePen) ---------- */
+  /* ---------- birds — rAF se detiene por completo cuando la pestaña está oculta ---------- */
   const canvas = document.getElementById("birds");
   if (canvas) {
     const ctx = canvas.getContext("2d");
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const birds = [];
-    const COUNT = reduce ? 12 : 32;
+    const COUNT = reduceMotion ? 12 : 32;
     let logicalW = 0;
     let logicalH = 0;
+    let rafId = 0;
+    let running = false;
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -190,7 +186,6 @@
     resize();
     window.addEventListener("resize", resize, { passive: true });
 
-    // Nacen FUERA a la izquierda, escalonadas, para entrar suave
     for (let i = 0; i < COUNT; i++) {
       birds.push({
         x: -40 - Math.random() * (logicalW * 0.9) - i * 18,
@@ -222,16 +217,12 @@
     }
 
     function animate(time) {
-      if (document.hidden) {
-        requestAnimationFrame(animate);
-        return;
-      }
+      if (!running) return;
       ctx.clearRect(0, 0, logicalW, logicalH);
       birds.forEach((b) => {
         b.flap += b.flapSpeed;
         b.x += b.speed;
         b.y += Math.sin(time * 0.0006 + b.driftSeed) * 0.18;
-        // al salir por la derecha, reaparecen fuera a la izquierda
         if (b.x > logicalW + 24) {
           b.x = -24 - Math.random() * 80;
           b.y = 40 + Math.random() * (logicalH * 0.7);
@@ -239,13 +230,73 @@
         }
         drawBird(b, time);
       });
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(animate);
     }
-    if (!reduce) requestAnimationFrame(animate);
 
-    document.addEventListener("visibilitychange", () => {
-      document.body.classList.toggle("tab-hidden", document.hidden);
-    });
+    function startBirds() {
+      if (running || reduceMotion) return;
+      running = true;
+      rafId = requestAnimationFrame(animate);
+    }
+
+    function stopBirds() {
+      running = false;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }
+
+    if (!reduceMotion) {
+      startBirds();
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stopBirds();
+        else startBirds();
+      });
+    }
+  }
+
+  /* ---------- IntersectionObserver: videos + marquee (pausa cuando salen de viewport) ---------- */
+  if (hasIO && !reduceMotion) {
+    /* Videos del showcase: play solo cuando están visibles */
+    const videos = document.querySelectorAll(".banded-stripes, .banded-focus");
+    if (videos.length) {
+      const videoIO = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const v = entry.target;
+            if (!(v instanceof HTMLVideoElement)) return;
+            if (entry.isIntersecting) {
+              v.play().catch(() => {});
+            } else {
+              v.pause();
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: "40px 0px" }
+      );
+      videos.forEach((v) => {
+        /* quitar autoplay nativo: el IO controla play/pause */
+        v.removeAttribute("autoplay");
+        v.pause();
+        videoIO.observe(v);
+      });
+    }
+
+    /* Marquee: pausar animación CSS cuando la sección no está visible */
+    const marqueeTrack = document.querySelector(".clients .marquee-track");
+    const clientsSection = document.querySelector(".clients") || document.querySelector(".clients-panel");
+    if (marqueeTrack && clientsSection) {
+      const marqueeIO = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            marqueeTrack.style.animationPlayState = entry.isIntersecting ? "running" : "paused";
+          });
+        },
+        { threshold: 0.05, rootMargin: "60px 0px" }
+      );
+      marqueeIO.observe(clientsSection);
+    }
   }
 
   /* ---------- headline scroll gradient ---------- */
@@ -277,6 +328,157 @@
     });
   });
 
+  /* ---------- programas: accordion (mismo patrón que créditos en trabajos) ---------- */
+  document.querySelectorAll(".tool-toggle").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const item = btn.closest(".tool-item");
+      const list = item && item.querySelector(".tool-skills");
+      if (!list) return;
+      const open = btn.getAttribute("aria-expanded") === "true";
+      const willOpen = !open;
+
+      /* cerrar los demás (acordeón de uno a la vez) */
+      document.querySelectorAll(".tool-toggle[aria-expanded='true']").forEach((other) => {
+        if (other === btn) return;
+        other.setAttribute("aria-expanded", "false");
+        const otherList = other.closest(".tool-item") && other.closest(".tool-item").querySelector(".tool-skills");
+        if (otherList) otherList.classList.remove("open");
+      });
+
+      btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      if (willOpen) {
+        list.classList.remove("open");
+        void list.offsetWidth; /* reinicia animación de entrada */
+        list.classList.add("open");
+      } else {
+        list.classList.remove("open");
+      }
+      if (onToolsToggle) onToolsToggle();
+    });
+  });
+
+  /* ---------- obras: igualar alto con el panel de "programas" (≥901px) ----------
+     Los 4 cuadros de obras tienen alto fijado por aspect-ratio; el panel de
+     programas tiene alto fijado por su contenido. Son dos ejes de cálculo
+     distintos que CSS no puede sincronizar solo. Acá se mide el alto real
+     del panel (en reposo, sin acordeones abiertos), y se resuelve
+     empíricamente qué ancho necesita el bento de obras para llegar a esa
+     misma altura, sin tocar los aspect-ratio ni el ancho del panel. ---------- */
+  (function () {
+    const row = document.querySelector(".obras-tools-row");
+    const obrasBento = row && row.querySelector(".obras-bento");
+    const toolsSide = row && row.querySelector(".tools-side");
+    const toolsPanel = row && row.querySelector(".tools-panel");
+    if (!row || !obrasBento || !toolsSide || !toolsPanel) return;
+
+    const obrasSide = row.querySelector(".obras-side");
+    const bentoHead = obrasSide && obrasSide.querySelector(".bento-head");
+    const mq = window.matchMedia("(min-width: 901px)");
+    let fixedTarget = 0; /* alto total que debe alcanzar el panel (con o sin acordeón abierto) */
+
+    function reset() {
+      row.style.removeProperty("width");
+      row.style.removeProperty("max-width");
+      row.style.removeProperty("grid-template-columns");
+      obrasBento.style.removeProperty("width");
+      toolsPanel.style.removeProperty("padding-bottom");
+      fixedTarget = 0;
+    }
+
+    /* Ajusta el padding-bottom del panel para que termine siempre en
+       `fixedTarget`, sin importar si hay un acordeón abierto (agrega menos
+       aire cuando el contenido ya creció) o cerrado (agrega más). */
+    function adjustPanelPadding() {
+      if (!mq.matches || !fixedTarget) return;
+      toolsPanel.style.removeProperty("padding-bottom");
+      void toolsPanel.offsetHeight;
+      const natural = toolsPanel.getBoundingClientRect().height;
+      const basePad = parseFloat(getComputedStyle(toolsPanel).paddingBottom) || 0;
+      const extra = Math.max(0, fixedTarget - natural);
+      toolsPanel.style.paddingBottom = (basePad + extra) + "px";
+    }
+    onToolsToggle = adjustPanelPadding;
+
+    function sync() {
+      reset();
+      if (!mq.matches) return; /* en móvil obras + programas se apilan (ver CSS) */
+
+      /* alto "en reposo" del panel, ignorando acordeones abiertos */
+      const openSkills = toolsPanel.querySelectorAll(".tool-skills.open");
+      openSkills.forEach((el) => el.classList.remove("open"));
+      void toolsPanel.offsetHeight;
+      const targetHeight = toolsPanel.getBoundingClientRect().height;
+      openSkills.forEach((el) => el.classList.add("open"));
+
+      const toolsWidth = toolsSide.getBoundingClientRect().width;
+      if (!targetHeight || !toolsWidth) return;
+
+      const cs = getComputedStyle(row);
+      const gap = parseFloat(cs.columnGap) || 0;
+      const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+
+      /* la relación ancho→alto del bento de obras es prácticamente lineal
+         (aspect-ratio + gaps fijos en ese viewport), así que 2 muestras
+         alcanzan para resolverla con precisión */
+      const w0 = obrasBento.getBoundingClientRect().width || 400;
+      obrasBento.style.width = w0 + "px";
+      const h0 = obrasBento.getBoundingClientRect().height;
+
+      const w1 = w0 + 140;
+      obrasBento.style.width = w1 + "px";
+      const h1 = obrasBento.getBoundingClientRect().height;
+
+      const slope = (h1 - h0) / (w1 - w0);
+      if (!isFinite(slope) || slope <= 0) { reset(); return; }
+
+      let wTarget = w0 + (targetHeight - h0) / slope;
+      wTarget = Math.max(200, wTarget);
+
+      obrasBento.style.width = wTarget + "px";
+      const hActual = obrasBento.getBoundingClientRect().height;
+      if (Math.abs(hActual - targetHeight) > 1) {
+        wTarget = Math.max(200, wTarget + (targetHeight - hActual) / slope);
+      }
+
+      /* no desbordar el viewport: si no hay espacio suficiente, se toma lo que haya */
+      const available = document.documentElement.clientWidth;
+      let rowWidth = wTarget + gap + toolsWidth + padX;
+      if (rowWidth > available) {
+        rowWidth = available;
+        wTarget = Math.max(200, rowWidth - gap - toolsWidth - padX);
+      }
+
+      obrasBento.style.removeProperty("width"); /* vuelve a estirarse dentro de su columna */
+      row.style.maxWidth = "none";
+      row.style.width = rowWidth + "px";
+      row.style.gridTemplateColumns = wTarget + "px " + toolsWidth + "px";
+
+      /* el bento de obras arranca más abajo que el panel porque encima tiene
+         su propio título ("Obras" + bajada). El panel no tiene ese título
+         afuera, así que se calcula un alto total fijo (target) que incluye
+         ese mismo espacio, y se mantiene igual sin importar si se abre un
+         acordeón (ver adjustPanelPadding). */
+      if (bentoHead) {
+        const headHeight = bentoHead.getBoundingClientRect().height;
+        const sideGap = parseFloat(getComputedStyle(obrasSide).rowGap) || 0;
+        fixedTarget = headHeight + sideGap + targetHeight;
+        adjustPanelPadding();
+      }
+    }
+
+    let raf = 0;
+    function schedule() {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(sync);
+    }
+
+    schedule();
+    window.addEventListener("load", schedule);
+    window.addEventListener("resize", schedule, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+    if (mq.addEventListener) mq.addEventListener("change", schedule);
+  })();
+
   /* ---------- obras lightbox ---------- */
   const lb = document.getElementById("lightbox");
   const lbImg = lb && lb.querySelector("img");
@@ -302,8 +504,7 @@
     if (e.key === "Escape") closeLb();
   });
 
-  /* ---------- entrance animations ---------- */
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /* ---------- entrance animations (IntersectionObserver) ---------- */
   const animated = document.querySelectorAll("[data-animate]");
   if (animated.length) {
     const groups = new Map();
@@ -318,7 +519,7 @@
       list.forEach((el, i) => el.style.setProperty("--d", `${Math.min(i * 0.08, 0.42)}s`));
     });
 
-    if (reduceMotion || !("IntersectionObserver" in window)) {
+    if (reduceMotion || !hasIO) {
       animated.forEach((el) => el.classList.add("in-view"));
     } else {
       const io = new IntersectionObserver(
