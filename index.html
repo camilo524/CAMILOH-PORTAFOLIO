@@ -12,9 +12,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,400;14..32,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/index-base.css">
-<link rel="stylesheet" href="css/index-sections.css">
-<link rel="stylesheet" href="css/index-effects.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/sections.css">
+<link rel="stylesheet" href="css/effects.css">
 <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet">
 </head>
 <body>
@@ -41,6 +41,8 @@
   </ul>
 </nav>
 
+<!-- BLOQUE BLANCO: detrás de la imagen del hero (sube hasta arriba), marquee y showcase; se desvanece al final del video -->
+<div class="white-stage">
 <header class="hero" id="inicio">
   <div class="hero-cover-full" aria-hidden="true">
     <img src="https://media.camiloh.co/OBRAS/portada.webp" alt="" width="1920" height="1080" loading="eager" decoding="async">
@@ -49,7 +51,6 @@
   <div class="hero-inner">
     <h1 class="hero-name">CAMILOH</h1>
     <p class="hero-role">ARTISTA 3D</p>
-    <p class="hero-welcome">Bienvenido a mi portafolio, este es un recorrido de todos mis proyectos, ideas y historias que he contado, cuento y contaré…</p>
   </div>
 </header>
 
@@ -128,35 +129,11 @@
   </div>
 </section>
 
-<!-- SHOWCASE + NÚMEROS encima del video (fondo con Fluted Glass CSS — sin CORS) -->
+<!-- SHOWCASE: video + paneles de números -->
 <section class="banded-showcase">
   <div class="banded-frame" data-animate="panel">
-    <!-- SVG filter: fluted glass (lines + prism distortion + blur) -->
-    <svg class="fluted-svg-defs" aria-hidden="true" width="0" height="0" style="position:absolute;overflow:hidden">
-      <defs>
-        <filter id="flutedGlassFilter" x="-5%" y="-5%" width="220%" height="220%" color-interpolation-filters="sRGB">
-          <!-- franjas verticales (shape=lines, size≈0.75) -->
-          <feTurbulence type="fractalNoise" baseFrequency="0.06 0" numOctaves="1" seed="2" result="ribs"/>
-          <!-- distorsión tipo prism (distortion=0.5) -->
-          <feDisplacementMap in="SourceGraphic" in2="ribs" scale="50" xChannelSelector="R" yChannelSelector="R" result="displaced"/>
-          <!-- blur unidireccional aproximado (blur=0.61) -->
-          <feGaussianBlur in="displaced" stdDeviation="9.4 5.61" result="blurred"/>
-          <!-- un toque de contraste en bordes -->
-          <feComponentTransfer in="blurred" result="final">
-            <feFuncR type="linear" slope="1.04" intercept="-0.02"/>
-            <feFuncG type="linear" slope="1.04" intercept="-0.02"/>
-            <feFuncB type="linear" slope="1.04" intercept="-0.02"/>
-          </feComponentTransfer>
-        </filter>
-      </defs>
-    </svg>
-    <!-- video de fondo CON fluted glass -->
-    <video class="banded-stripes" src="https://media.camiloh.co/STAYPIT/video.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
-    <!-- capa de highlights / shadows de las estrías -->
-    <div class="banded-fluted-overlay" aria-hidden="true"></div>
-    <!-- frame flotante SIN efecto fluted -->
     <video class="banded-focus" src="https://media.camiloh.co/STAYPIT/video.mp4" autoplay muted loop playsinline preload="auto" aria-label="STAY x PITBULLYING — preview"></video>
-    <!-- números a la derecha, sin efecto fluted -->
+    <!-- números a la derecha -->
     <div class="banded-stats-row">
       <div class="banded-stat-panel">
         <span class="stat-num">+22</span>
@@ -176,13 +153,13 @@
     </div>
   </div>
 </section>
+</div><!-- /white-stage -->
 
 <main class="content">
 
   <!-- PORTAFOLIO bento -->
   <section class="portfolio bento" id="portafolio">
     <header class="bento-head">
-      <span class="bento-eyebrow">Mi</span>
       <h2 class="bento-title">Portafolio</h2>
       <p class="bento-sub">Selección de proyectos. Haz clic para ver el panel completo.</p>
     </header>
@@ -228,7 +205,6 @@
 
     <aside class="tools-side" id="programas">
       <div class="tools-panel" data-animate="panel">
-        <span class="bento-eyebrow">Caja de herramientas</span>
         <h2 class="bento-title">Programas</h2>
         <p class="bento-sub">Las herramientas con las que construyo cada frame.</p>
         <div class="tools-list" role="list">
@@ -306,7 +282,7 @@
   <section class="prologue" id="contacto">
     <div class="prologue-inner" data-animate="panel">
       <h2 class="prologue-title headline">Cada historia necesita su frame</h2>
-      <p class="prologue-text">Si tienes una idea que aún no tiene forma, un producto que merece brillar o una canción que pide un mundo propio, aquí estoy. Trabajo con agencias, marcas y artistas para convertir referencias sueltas en imágenes que se quedan. Escribeme y contemos la siguiente historia juntos.</p>
+      <p class="prologue-text">Si tienes una idea que aún no tiene forma, un producto que merece brillar o una canción que pide un mundo propio, aquí estoy. Trabajo con agencias, marcas y artistas para convertir referencias sueltas en imágenes que se quedan. Escríbeme y contemos la siguiente historia juntos.</p>
       <div class="prologue-actions">
         <a href="mailto:contact@camiloh.co" class="btn-primary">Escribirme</a>
         <a href="trabajos.html" class="btn-ghost">Ver trabajos</a>
