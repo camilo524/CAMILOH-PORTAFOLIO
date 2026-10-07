@@ -259,7 +259,7 @@
   /* ---------- IntersectionObserver: videos + marquee (pausa cuando salen de viewport) ---------- */
   if (hasIO && !reduceMotion) {
     /* Videos del showcase: play solo cuando están visibles */
-    const videos = document.querySelectorAll(".banded-stripes, .banded-focus");
+    const videos = document.querySelectorAll(".banded-focus");
     if (videos.length) {
       const videoIO = new IntersectionObserver(
         (entries) => {
