@@ -48,7 +48,19 @@
   opacity: 0;
 }
 
-/* Secciones transparentes para que se vea el sunset debajo */
+/* Bloque blanco: arranca arriba de todo (detrás de la imagen del hero, que tiene alfa),
+   contiene hero + marquee + showcase y se desvanece hacia el cielo al final del video */
+.white-stage {
+  --white-fade: clamp(140px, 20vw, 320px);
+  position: relative;
+  z-index: 5;
+  background: linear-gradient(180deg,
+    var(--paper) 0,
+    var(--paper) calc(100% - var(--white-fade)),
+    rgba(247,241,225,0) 100%);
+}
+
+/* Secciones transparentes para que se vea el fondo debajo */
 .clients,
 .clients-panel,
 .clients .marquee-bar,
@@ -59,15 +71,10 @@
 .obras,
 .tools,
 .prologue,
-.obras-tools-row {
+.obras-tools-row,
+.banded-showcase {
   background: transparent !important;
   background-color: transparent !important;
-}
-
-/* Showcase mantiene su blanco (bandas inclinadas) */
-.banded-showcase {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
 }
 
 /* ─── Aves por encima del contenido, debajo del hero ─── */
@@ -101,16 +108,13 @@
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   .clients .marquee-track { animation: none; }
-  .banded-stripes {
-    filter: none;
-    -webkit-filter: none;
-  }
-  .banded-fluted-overlay { opacity: .45; }
   [data-animate] {
     opacity: 1;
     transform: none;
     transition: none;
   }
   #halation { animation: none; }
+  .folio-card, .folio-meta, .obra-card, .tool-toggle { transition: none; }
+  .folio-card:hover, .obra-card:hover { transform: none; }
   .pf-brand-spark { animation: none; }
 }
