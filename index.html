@@ -163,7 +163,6 @@
   <section class="portfolio bento" id="portafolio">
     <header class="bento-head">
       <h2 class="bento-title">Portafolio</h2>
-      <p class="bento-sub">Selección de proyectos. Haz clic para ver el panel completo.</p>
     </header>
     <div class="bento-grid portfolio-bento" id="portfolioTrack">
       <button type="button" class="folio-card bento-lg" data-slug="staypit" data-animate="card">
@@ -195,7 +194,6 @@
     <div class="svc-inner">
       <header class="svc-head">
         <h2 class="svc-heading smoke-type" data-smoke="#7C9BFF">Servicios</h2>
-        <p class="svc-lead">Lo que puedo hacer por tu proyecto, desde la idea hasta el frame final.</p>
       </header>
 
       <article class="svc" style="--tint:#EADFFF;--accent:#6D3DF0" data-animate="panel">
@@ -230,9 +228,9 @@
       </ul>
       <a class="btn-dark" href="mailto:contact@camiloh.co?subject=Cotizaci%C3%B3n%20-%20Simulaci%C3%B3n%20de%20tela">Pedir cotización</a>
     </div>
-        <div class="svc-stage stage-cloth" role="group" aria-label="Tela simulada: agárrala y jálala con el mouse o el dedo">
-          <canvas></canvas>
-          <span class="svc-hint">Agarra y jala la tela</span>
+        <div class="svc-stage stage-cloth" role="group" aria-label="Hoja de vidrio que se dobla como tela: agárrala y arrástrala con el mouse o el dedo">
+          <div class="fbill"></div>
+          <span class="svc-hint">Agarra y dobla la hoja</span>
         </div>
       </article>
 
@@ -251,14 +249,16 @@
     </div>
         <div class="svc-stage stage-vfx">
           <!-- Reemplaza las dos imágenes por tu plano final (con composición) y tu plano base (sin composición), ambas 16:9.
-               Al poner la imagen real "sin composición", quita la clase is-placeholder. -->
+               Al poner la imagen real "sin composición", quita la clase is-placeholder de .cmp-before. -->
           <div class="cmp" role="slider" tabindex="0" aria-label="Comparar sin composición y con composición" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
-            <img class="cmp-after" src="https://media.camiloh.co/STAY%20X%20PITBULLYING/cover.webp" alt="Plano final con composición de VFX" loading="lazy" draggable="false">
-            <img class="cmp-before is-placeholder" src="https://media.camiloh.co/STAY%20X%20PITBULLYING/cover.webp" alt="Plano base sin composición" loading="lazy" draggable="false">
-            <span class="cmp-label cmp-label-l">Sin composición</span>
-            <span class="cmp-label cmp-label-r">Con composición</span>
-            <span class="cmp-line"></span>
-            <span class="cmp-grip" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m9 7-5 5 5 5M15 7l5 5-5 5"/></svg></span>
+            <img class="cmp-img cmp-after" src="https://media.camiloh.co/STAY%20X%20PITBULLYING/cover.webp" alt="Plano final con composición de VFX" loading="lazy" draggable="false">
+            <div class="cmp-before is-placeholder">
+              <img class="cmp-img" src="https://media.camiloh.co/STAY%20X%20PITBULLYING/cover.webp" alt="Plano base sin composición" loading="lazy" draggable="false">
+            </div>
+            <span class="cmp-tag cmp-tag-l">Sin composición</span>
+            <span class="cmp-tag cmp-tag-r">Con composición</span>
+            <svg class="cmp-line" aria-hidden="true"><path d="M0 0"/></svg>
+            <span class="cmp-grip"><span class="cmp-knob"><svg width="16" height="10" viewBox="0 0 16 10" aria-hidden="true"><path d="M5 1 1 5l4 4M11 1l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
           </div>
         </div>
       </article>
@@ -277,6 +277,14 @@
       <a class="btn-dark" href="mailto:contact@camiloh.co?subject=Cotizaci%C3%B3n%20-%20Generaci%C3%B3n%20de%20imagen%20y%20video">Pedir cotización</a>
     </div>
         <div class="svc-stage stage-gen" data-gen>
+          <svg class="gen-defs" width="0" height="0" aria-hidden="true">
+            <filter id="genFilter" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+              <feTurbulence type="fractalNoise" baseFrequency="0.006 0.008" numOctaves="2" seed="7" result="n"/>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
+              <feGaussianBlur in="d" stdDeviation="20"/>
+              <feComponentTransfer><feFuncR type="linear" slope="1" intercept="0"/><feFuncG type="linear" slope="1" intercept="0"/><feFuncB type="linear" slope="1" intercept="0"/></feComponentTransfer>
+            </filter>
+          </svg>
           <div class="gen-ui">
             <div class="gen-top">
               <div class="gen-seg" role="group" aria-label="Tipo de resultado">
@@ -284,10 +292,12 @@
                 <button type="button" data-mode="video" aria-pressed="false">Video</button>
               </div>
             </div>
-            <p class="gen-prompt"></p>
+            <p class="gen-prompt is-empty">Describe tu idea o sube una referencia…</p>
             <div class="gen-frame">
-              <img class="gen-img" alt="Resultado de ejemplo generado" draggable="false">
-              <div class="gen-shimmer"></div>
+              <span class="gen-empty">Tu resultado aparecerá aquí</span>
+              <img class="gen-layer gen-busy" alt="" draggable="false">
+              <img class="gen-layer gen-final" alt="" draggable="false">
+              <span class="gen-pct" role="status" aria-live="off"></span>
               <div class="gen-time"><i></i></div>
             </div>
             <button type="button" class="gen-go">Generar</button>
@@ -302,7 +312,6 @@
     <div class="obras-side">
       <header class="bento-head">
         <h2 class="bento-title">Obras</h2>
-        <p class="bento-sub">Piezas sueltas, exploraciones y frames que merecen su propio espacio.</p>
       </header>
       <div class="bento-grid obras-bento">
         <figure class="obra-card" data-animate="card"><img src="https://media.camiloh.co/ALOHA/01.webp" alt="Obra 01" loading="lazy"></figure>
@@ -390,7 +399,7 @@
 
   <section class="prologue" id="contacto">
     <div class="prologue-inner" data-animate="panel">
-      <h2 class="prologue-title headline">Cada historia necesita su frame</h2>
+      <h2 class="prologue-title">Cada historia necesita su frame</h2>
       <p class="prologue-text">Si tienes una idea que aún no tiene forma, un producto que merece brillar o una canción que pide un mundo propio, aquí estoy. Trabajo con agencias, marcas y artistas para convertir referencias sueltas en imágenes que se quedan. Escríbeme y contemos la siguiente historia juntos.</p>
       <div class="prologue-actions">
         <a href="mailto:contact@camiloh.co" class="btn-primary">Escribirme</a>

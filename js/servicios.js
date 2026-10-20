@@ -128,99 +128,252 @@ if (stage3d) whenVisible(stage3d, async () => {
   }
 }, "200px");
 
-/* ───────── Tela (verlet) ───────── */
-const stageCloth = $(".stage-cloth");
-if (stageCloth) {
-  const cv = $("canvas", stageCloth), ctx = cv.getContext("2d");
-  const COLS = 22, ROWS = 13;
-  let W, H, pts, links, spx, spy, drag = null, mouse = { x: 0, y: 0 };
-  const build = () => {
-    const dpr = Math.min(devicePixelRatio, 2);
-    W = stageCloth.clientWidth; H = stageCloth.clientHeight;
-    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const cw = Math.min(W * 0.74, 540); spx = cw / (COLS - 1); spy = spx * 0.92;
-    const x0 = (W - cw) / 2, y0 = H * 0.13;
-    pts = []; links = [];
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const x = x0 + c * spx, y = y0 + r * spy;
-      pts.push({ x, y, px: x, py: y, pin: r === 0 && (c % 7 === 0 || c === COLS - 1) });
-    }
-    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
-      const i = r * COLS + c;
-      if (c < COLS - 1) links.push([i, i + 1, spx]);
-      if (r < ROWS - 1) links.push([i, i + COLS, spy]);
+/* ───────── Hoja de vidrio que se dobla (folding bill) ─────────
+   Port a JS puro del bloque "Folding bill": una rejilla de puntos unidos
+   por resortes que no se estiran (Verlet). Agarras un punto y el resto
+   lo sigue; al soltar vuelve a quedar plana. */
+const BILL = { nx: 46, ny: 20, w: 3.0, h: 3.0 / 2.35, cam: 3.95, tilt: [-0.32, 0.22, -0.06], fw: 340, fh: 240 };
+const SPILL = 2, REACH = 1.5, CREASE = 0.55, ICE = 0xdde8f0, CORNER = 0.09;
+const STIFFNESS = 40, SETTLE = 0;   /* rigidez (papel ↔ seda) y rapidez con que vuelve a quedar plana */
+
+const billInset = (x, y, W, H) => {
+  const r = CORNER * H, qx = Math.max(r - x, x - (W - 1 - r), 0), qy = Math.max(r - y, y - (H - 1 - r), 0);
+  return qx > 0 && qy > 0 ? r - Math.hypot(qx, qy) : Math.min(x, y, W - 1 - x, H - 1 - y);
+};
+const billOutline = (W, H) => {
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const g = c.getContext("2d");
+  g.fillStyle = "#000"; g.fillRect(0, 0, W, H); g.fillStyle = "#fff";
+  g.beginPath(); g.roundRect(0, 0, W, H, CORNER * H); g.fill();
+  return c;
+};
+/* relieve de la hoja: borde "inflado" para que se lea gruesa */
+const billPlain = () => {
+  const W = 1024, H = 437, RIM = 34;
+  const c = document.createElement("canvas"); c.width = W; c.height = H;
+  const g = c.getContext("2d"), d = g.createImageData(W, H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4, e = Math.min(1, billInset(x, y, W, H) / RIM), puff = e * (2 - e);
+    d.data[i] = d.data[i + 1] = d.data[i + 2] = Math.min(255, 46 + 84 * puff); d.data[i + 3] = 255;
+  }
+  g.putImageData(d, 0, 0);
+  const out = document.createElement("canvas"); out.width = W; out.height = H;
+  const o = out.getContext("2d"); o.filter = "blur(0.8px)"; o.drawImage(c, 0, 0);
+  return out;
+};
+/* un estudio para que el vidrio refleje: cuarto oscuro con cajas de luz */
+const billStudio = (THREE, pmrem) => {
+  const room = new THREE.Scene();
+  room.add(new THREE.Mesh(new THREE.BoxGeometry(40, 40, 40), new THREE.MeshBasicMaterial({ color: 0x1c2026, side: THREE.BackSide })));
+  const panel = (w, h, x, y, z, glow) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color().setScalar(glow), side: THREE.DoubleSide }));
+    m.position.set(x, y, z); m.lookAt(0, 0, 0); room.add(m);
+  };
+  panel(14, 5, -4, 9, 9, 3.2); panel(3, 16, 12, 0, 6, 2.4); panel(16, 3, 0, -10, 6, 1.2); panel(20, 20, 0, 0, 16, 0.55); panel(10, 10, -12, 2, 2, 0.8);
+  return pmrem.fromScene(room, 0.03).texture;
+};
+
+function mountBill(THREE, el) {
+  const light = matchMedia("(pointer: coarse), (max-width: 760px)").matches;   /* en celular: más liviano y se duerme */
+  const renderer = new THREE.WebGLRenderer({ antialias: !light, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, light ? 1.25 : 2));
+  renderer.setSize(BILL.fw * SPILL, BILL.fh * SPILL, false);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.25;
+  const cv = renderer.domElement; cv.className = "fbill-gl";
+  Object.assign(cv.style, { width: `${SPILL * 100}%`, height: `${SPILL * 100}%`, left: `${(-(SPILL - 1) / 2) * 100}%`, top: `${(-(SPILL - 1) / 2) * 100}%` });
+  el.appendChild(cv);
+
+  const scene = new THREE.Scene(), pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = billStudio(THREE, pmrem);
+  const camera = new THREE.PerspectiveCamera((2 * Math.atan(SPILL * Math.tan((15 * Math.PI) / 180)) * 180) / Math.PI, BILL.fw / BILL.fh, 0.1, 50);
+  camera.position.set(0, 0, BILL.cam);
+  const { nx: NX, ny: NY, w: BW, h: BH } = BILL;
+
+  const geo = new THREE.PlaneGeometry(BW, BH, NX - 1, NY - 1), P = geo.attributes.position, N = P.count;
+  const rest = new Float32Array(P.array), pos = new Float32Array(rest), prev = new Float32Array(rest);
+  const links = [], id = (i, j) => j * NX + i;
+  const add = (a, b, k) => links.push({ a, b, len: Math.hypot(rest[a * 3] - rest[b * 3], rest[a * 3 + 1] - rest[b * 3 + 1]), k });
+  for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) {
+    if (i < NX - 1) add(id(i, j), id(i + 1, j), 1);
+    if (j < NY - 1) add(id(i, j), id(i, j + 1), 1);
+    if (i < NX - 1 && j < NY - 1) { add(id(i, j), id(i + 1, j + 1), 0.7); add(id(i + 1, j), id(i, j + 1), 0.7); }
+    if (i < NX - 2) add(id(i, j), id(i + 2, j), -1);   /* resortes de flexión: peso según Stiffness */
+    if (j < NY - 2) add(id(i, j), id(i, j + 2), -1);
+  }
+
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: ICE, metalness: 0.3, roughness: 0.2, clearcoat: 0.45, clearcoatRoughness: 0.12,
+    envMapIntensity: 0.75, iridescence: 0.12, iridescenceIOR: 1.3, bumpScale: 6, side: THREE.DoubleSide,
+  });
+  const plain = new THREE.CanvasTexture(billPlain());
+  plain.colorSpace = THREE.NoColorSpace; plain.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  mat.bumpMap = plain;
+  const cut = new THREE.CanvasTexture(billOutline(512, Math.round(512 / 2.35)));   /* esquinas redondeadas por máscara alfa */
+  cut.colorSpace = THREE.NoColorSpace; mat.alphaMap = cut; mat.alphaTest = 0.5;
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.rotation.set(...BILL.tilt);   /* ladeada para que la luz corra sobre ella */
+  scene.add(mesh);
+
+  /* la mano */
+  let held = -1, holdZ = 0, touched = performance.now(), flutter = 1, calm = 0;
+  const target = new THREE.Vector3(), ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  const toNdc = (e) => { const r = cv.getBoundingClientRect(); ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); };
+  const aim = () => {
+    ray.setFromCamera(ndc, camera);
+    const t = (holdZ - ray.ray.origin.z) / ray.ray.direction.z;
+    target.copy(ray.ray.direction).multiplyScalar(t).add(ray.ray.origin);
+    mesh.worldToLocal(target);
+    if (held >= 0) {   /* la mano tiene alcance: pasado REACH el jalón se vuelve goma */
+      const k = held * 3, dx = target.x - rest[k], dy = target.y - rest[k + 1], dz = target.z - rest[k + 2], d = Math.hypot(dx, dy, dz);
+      if (d > REACH) { const f = (REACH + (d - REACH) * 0.2) / d; target.set(rest[k] + dx * f, rest[k + 1] + dy * f, rest[k + 2] + dz * f); }
     }
   };
-  const pos = (e) => { const b = cv.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; };
-  cv.addEventListener("pointerdown", (e) => {
-    mouse = pos(e); let best = 80 * 80;
-    pts.forEach((p, i) => { const d = (p.x - mouse.x) ** 2 + (p.y - mouse.y) ** 2; if (d < best) { best = d; drag = i; } });
-    if (drag !== null) { cv.setPointerCapture(e.pointerId); stageCloth.classList.add("is-drag"); }
-  });
-  cv.addEventListener("pointermove", (e) => { if (drag !== null) mouse = pos(e); });
-  const release = () => { drag = null; stageCloth.classList.remove("is-drag"); };
-  cv.addEventListener("pointerup", release); cv.addEventListener("pointercancel", release);
-  new ResizeObserver(build).observe(stageCloth); build();
+  const down = (e) => {
+    toNdc(e); ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObject(mesh)[0];
+    if (!hit) return;
+    const local = mesh.worldToLocal(hit.point.clone());
+    let best = -1, bd = Infinity;
+    for (let n = 0; n < N; n++) {
+      const d = (pos[n * 3] - local.x) ** 2 + (pos[n * 3 + 1] - local.y) ** 2 + (pos[n * 3 + 2] - local.z) ** 2;
+      if (d < bd) { bd = d; best = n; }
+    }
+    held = best; holdZ = hit.point.z; touched = performance.now(); flutter = 1; calm = 0;
+    aim(); el.dataset.held = "true";
+    try { el.setPointerCapture(e.pointerId); } catch { /* puntero simulado */ }
+    wake();
+  };
+  const move = (e) => { toNdc(e); if (held >= 0) aim(); };
+  const up = (e) => {
+    if (held < 0) return;
+    held = -1; el.dataset.held = "";
+    try { el.releasePointerCapture(e.pointerId); } catch { /* nunca capturado */ }
+  };
+  el.addEventListener("pointerdown", down); el.addEventListener("pointermove", move);
+  el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
 
-  const shade = (r, g, b, k) => `rgb(${Math.min(255, r * k) | 0},${Math.min(255, g * k) | 0},${Math.min(255, b * k) | 0})`;
-  loopWhileVisible(stageCloth, (t) => {
-    for (let i = 0; i < pts.length; i++) {
-      const p = pts[i]; if (p.pin) continue;
-      const vx = (p.x - p.px) * 0.985, vy = (p.y - p.py) * 0.985;
-      const wind = reduce ? 0 : Math.sin(t * 0.0018 + (i % COLS) * 0.35) * 0.05;
-      p.px = p.x; p.py = p.y; p.x += vx + wind; p.y += vy + 0.32;
+  /* el ciclo */
+  let raf = 0, seen = true, running = false, last = performance.now(), clock = 0;
+  const H = 1 / 120, PASSES = light ? 9 : 16;
+  const step = () => {
+    const bend = 0.04 + (STIFFNESS / 100) * 0.5;
+    const home = (0.3 + (SETTLE / 100) * 7) * (held >= 0 ? 0.04 : 1);   /* agarrada, casi suelta su deseo de quedar plana */
+    for (let n = 0; n < N; n++) {
+      const k = n * 3, rx = rest[k], ry = rest[k + 1];
+      const rz = Math.sin(rx * 1.25 + 0.6) * 0.16 + Math.cos(ry * 2.2) * 0.04 + (reduce ? 0 : Math.sin(clock * 1.3 + rx * 1.7 + ry * 0.8) * 0.035 * flutter);
+      for (let c = 0; c < 3; c++) {
+        const p = pos[k + c], v = (p - prev[k + c]) * 0.982, want = c === 0 ? rx : c === 1 ? ry : rz;
+        prev[k + c] = p; pos[k + c] = p + v + (want - p) * home * H * H * 60;
+      }
     }
-    if (drag !== null) { const p = pts[drag]; p.x = p.px = mouse.x; p.y = p.py = mouse.y; }
-    for (let k = 0; k < 8; k++) for (const [a, b, len] of links) {
-      const A = pts[a], B = pts[b], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 1, f = (d - len) / d / 2;
-      const ax = A.pin || a === drag ? 0 : 1, bx = B.pin || b === drag ? 0 : 1, s = ax + bx || 1;
-      A.x += dx * f * 2 * ax / s; A.y += dy * f * 2 * ax / s; B.x -= dx * f * 2 * bx / s; B.y -= dy * f * 2 * bx / s;
+    if (held >= 0) { const k = held * 3; pos[k] = target.x; pos[k + 1] = target.y; pos[k + 2] = target.z; }
+    for (let it = 0; it < PASSES; it++) for (const l of links) {
+      const a = l.a * 3, b = l.b * 3, dx = pos[b] - pos[a], dy = pos[b + 1] - pos[a + 1], dz = pos[b + 2] - pos[a + 2];
+      const d = Math.hypot(dx, dy, dz) || 1e-6;
+      let w = (l.k < 0 ? bend : l.k) * 0.5 * (d - l.len) / d;
+      if (l.k < 0 && d < l.len * CREASE) w = 0.5 * (d - l.len * CREASE) / d;   /* un doblez tiene límite: redondo, nunca filo */
+      const pa = l.a === held ? 0 : 1, pb = l.b === held ? 0 : 1, s = pa + pb || 1;
+      pos[a] += dx * w * (2 * pa / s); pos[a + 1] += dy * w * (2 * pa / s); pos[a + 2] += dz * w * (2 * pa / s);
+      pos[b] -= dx * w * (2 * pb / s); pos[b + 1] -= dy * w * (2 * pb / s); pos[b + 2] -= dz * w * (2 * pb / s);
     }
-    ctx.clearRect(0, 0, W, H);
-    for (let r = 0; r < ROWS - 1; r++) for (let c = 0; c < COLS - 1; c++) {
-      const p0 = pts[r * COLS + c], p1 = pts[r * COLS + c + 1], p2 = pts[(r + 1) * COLS + c + 1], p3 = pts[(r + 1) * COLS + c];
-      const ex = p1.x - p0.x, ey = p1.y - p0.y, fx = p3.x - p0.x, fy = p3.y - p0.y;
-      const skew = (ex * fy - ey * fx) / (spx * spy);
-      const k = Math.max(0.45, Math.min(1.2, 0.55 + 0.45 * skew + (ey / (Math.hypot(ex, ey) || 1)) * 0.4));
-      const m = r / (ROWS - 1);
-      ctx.fillStyle = ctx.strokeStyle = shade(255 - m * 15, 179 - m * 60, 143 + m * 20, k);
-      ctx.beginPath(); ctx.moveTo(p0.x, p0.y); ctx.lineTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.lineTo(p3.x, p3.y); ctx.closePath();
-      ctx.fill(); ctx.lineWidth = 0.8; ctx.stroke();
-    }
-    ctx.strokeStyle = "#F7F1E1"; ctx.lineWidth = 4; ctx.lineCap = "round";
-    ctx.beginPath(); ctx.moveTo(pts[0].x - 10, pts[0].y - 3); ctx.lineTo(pts[COLS - 1].x + 10, pts[COLS - 1].y - 3); ctx.stroke();
-  });
+  };
+  const frame = (now) => {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now; clock += dt;
+    if (held >= 0) touched = now;
+    const idle = (now - touched) / 1000;
+    if (light) flutter = Math.max(0, Math.min(1, 1 - (idle - 2) / 1.5));
+    if (reduce) flutter = 0;
+    const n = Math.max(1, Math.round(dt / H));
+    for (let s = 0; s < n; s++) step();
+    let moved = 0;
+    for (let k = 0; k < pos.length; k++) moved = Math.max(moved, Math.abs(pos[k] - prev[k]));
+    calm = held < 0 && moved < 2e-4 ? calm + 1 : 0;
+    P.array.set(pos); P.needsUpdate = true;
+    geo.computeVertexNormals(); geo.computeBoundingSphere();
+    renderer.render(scene, camera);
+    const sleep = (light || reduce) && flutter === 0 && calm > 20;   /* en celular se duerme cuando queda quieta */
+    if (seen && !sleep) raf = requestAnimationFrame(frame); else running = false;
+  };
+  const wake = () => { if (running || !seen) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); };
+  new IntersectionObserver(([row]) => { seen = row.isIntersecting; if (seen) wake(); }).observe(el);
+  wake();
 }
+const stageCloth = $(".stage-cloth");
+if (stageCloth) whenVisible(stageCloth, async () => {
+  try { mountBill(await import("three"), $(".fbill", stageCloth)); }
+  catch (err) { console.warn("Hoja de vidrio no disponible", err); }
+}, "200px");
 
-/* ───────── Comparador VFX ───────── */
+/* ───────── Comparador VFX (image compare) ─────────
+   La línea es gelatina: la perilla va donde está el dedo y los extremos la
+   siguen con un resorte; el recorte de la capa "antes" usa la misma curva.
+   Un empujón rápido la lanza hasta el borde. */
 const cmp = $(".cmp");
 if (cmp) {
-  const set = (pct) => {
-    pct = Math.max(0, Math.min(100, pct));
-    cmp.style.setProperty("--pos", pct + "%"); cmp.setAttribute("aria-valuenow", Math.round(pct));
+  const before = $(".cmp-before", cmp), after = $(".cmp-after", cmp), svg = $(".cmp-line", cmp), line = $("path", svg);
+  const grip = $(".cmp-grip", cmp), tagL = $(".cmp-tag-l", cmp), tagR = $(".cmp-tag-r", cmp);
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  let W = 1, H = 1, cur = 0.5, target = null, raf = 0, drag = null;
+  const ends = { x: 0.5, v: 0 };
+  const draw = (bend = 0) => {
+    const x = cur * W, top = x - bend;
+    line.setAttribute("d", `M ${top.toFixed(2)} 0 Q ${(x + bend).toFixed(2)} ${H / 2} ${top.toFixed(2)} ${H}`);
+    before.style.clipPath = `path("M 0 0 L ${top.toFixed(2)} 0 Q ${(x + bend).toFixed(2)} ${H / 2} ${top.toFixed(2)} ${H} L 0 ${H} Z")`;
+    grip.style.left = x + "px";
+    after.style.transform = `translateX(${((0.5 - cur) * 14).toFixed(2)}px) scale(1.06)`;   /* la capa de atrás se desplaza un poco */
+    tagL.style.opacity = clamp((cur - 0.14) * 4, 0, 1); tagR.style.opacity = clamp((0.86 - cur) * 4, 0, 1);
+    cmp.setAttribute("aria-valuenow", Math.round(cur * 100));
   };
-  const fromEvent = (e) => { const b = cmp.getBoundingClientRect(); set(((e.clientX - b.left) / b.width) * 100); };
-  let down = false;
-  cmp.addEventListener("pointerdown", (e) => { down = true; cmp.setPointerCapture(e.pointerId); fromEvent(e); });
-  cmp.addEventListener("pointermove", (e) => { if (down) fromEvent(e); });
-  cmp.addEventListener("pointerup", () => (down = false));
-  cmp.addEventListener("pointercancel", () => (down = false));
+  const loop = () => {
+    if (raf) return;
+    let prev = performance.now();
+    const stepFn = (t) => {
+      const dt = Math.min(0.033, (t - prev) / 1000); prev = t;
+      if (target !== null) {
+        cur += (target - cur) * (1 - Math.pow(0.0004, dt));
+        if (Math.abs(target - cur) < 0.0005) { cur = target; target = null; }
+      }
+      ends.v += ((cur - ends.x) * 620 - ends.v * 44) * dt; ends.x += ends.v * dt;   /* resorte de los extremos */
+      const lim = Math.min(26, 9 * (W / 270));
+      draw(clamp((cur - ends.x) * W * 0.5, -lim, lim));
+      const calmed = target === null && Math.abs(cur - ends.x) < 0.0006 && Math.abs(ends.v) < 0.002;
+      if (calmed) { ends.x = cur; ends.v = 0; draw(0); raf = 0; return; }
+      raf = requestAnimationFrame(stepFn);
+    };
+    raf = requestAnimationFrame(stepFn);
+  };
+  const glide = (to) => { target = to; loop(); };
+  const place = (v) => { target = null; cur = v; loop(); };
+  const at = (cx) => { const r = cmp.getBoundingClientRect(); return clamp((cx - r.left) / r.width, 0, 1); };
+  new ResizeObserver(() => { const b = cmp.getBoundingClientRect(); W = b.width; H = b.height; svg.setAttribute("viewBox", `0 0 ${W} ${H}`); draw(); }).observe(cmp);
+
+  cmp.addEventListener("pointerdown", (e) => {
+    try { cmp.setPointerCapture(e.pointerId); } catch { /* puntero simulado */ }
+    const v = at(e.clientX); drag = { v: 0, t: performance.now(), last: v }; cmp.dataset.held = "true"; glide(v);
+  });
+  cmp.addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    const v = at(e.clientX), now = performance.now();
+    drag.v = (v - drag.last) / Math.max(1, now - drag.t); drag.t = now; drag.last = v; place(v);
+  });
+  const release = (e) => {
+    const d = drag; drag = null; cmp.dataset.held = "";
+    try { cmp.releasePointerCapture(e.pointerId); } catch { /* nunca capturado */ }
+    if (d && Math.abs(d.v) > 0.0025) glide(d.v > 0 ? 1 : 0);   /* un empujón la lanza al borde */
+  };
+  cmp.addEventListener("pointerup", release);
+  cmp.addEventListener("pointercancel", () => { drag = null; cmp.dataset.held = ""; });
   cmp.addEventListener("keydown", (e) => {
-    const v = +cmp.getAttribute("aria-valuenow");
-    const next = { ArrowLeft: v - 5, ArrowRight: v + 5, Home: 0, End: 100 }[e.key];
-    if (next !== undefined) { e.preventDefault(); set(next); }
+    const base = target ?? cur;
+    const next = { ArrowLeft: base - 0.1, ArrowRight: base + 0.1, Home: 0, End: 1 }[e.key];
+    if (next !== undefined) { e.preventDefault(); glide(clamp(next, 0, 1)); }
   });
-  if (!reduce) whenVisible(cmp, () => {   /* pequeño vaivén inicial para mostrar que se arrastra */
-    const t0 = performance.now();
-    (function peek(t) {
-      if (down) return;
-      const k = (t - t0) / 1800;
-      if (k < 1) { set(50 + Math.sin(k * Math.PI * 2) * 18); requestAnimationFrame(peek); } else set(50);
-    })(t0);
-  });
+  if (!reduce) whenVisible(cmp, () => { glide(0.32); setTimeout(() => { if (!drag) glide(0.5); }, 700); });   /* pequeño vaivén inicial */
 }
 
 /* ───────── Generar imagen / video ─────────
+   La imagen aparece en tres escalas, como una generada: primero las formas
+   (muy borrosa y con contraste), luego la forma y, al final, el grano nítido.
    Cambia RESULTADOS por tus generaciones reales con IA (imagen + prompt). */
 const RESULTADOS = [
   { img: "https://media.camiloh.co/PALOMA%20MAMI/cover.webp", prompt: "Personaje estilizado, luz de estudio, fondo pastel" },
@@ -230,28 +383,102 @@ const RESULTADOS = [
 ];
 const gen = $("[data-gen]");
 if (gen) {
-  const frame = $(".gen-frame", gen), img = $(".gen-img", gen), promptEl = $(".gen-prompt", gen), go = $(".gen-go", gen);
-  let n = 0;
+  const PAPER = 0.9, PACE = 4.5, RIPPLE = 50;   /* PACE = segundos de la aparición; RIPPLE = qué tan líquida es */
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const mix = (a, b, t) => a + (b - a) * t;
+  const smooth = (a, b, v) => { const u = clamp((v - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  /* el contador lleva su propio ritmo: arranque rápido, tramo lento, ráfaga, pausa, ráfaga y arrastre final */
+  const knots = () => [[0, 0], [rnd(0.1, 0.16), rnd(0.1, 0.16)], [rnd(0.32, 0.38), rnd(0.22, 0.3)], [rnd(0.44, 0.49), rnd(0.5, 0.6)],
+    [rnd(0.56, 0.61), rnd(0.62, 0.68)], [rnd(0.68, 0.72), rnd(0.84, 0.88)], [1, 1]];
+  const along = (ks, t) => {
+    for (let i = 1; i < ks.length; i++) {
+      const [t0, v0] = ks[i - 1], [t1, v1] = ks[i];
+      if (t > t1) continue;
+      const u = clamp((t - t0) / (t1 - t0), 0, 1);
+      return mix(v0, v1, mix(u, u * u * (3 - 2 * u), 0.5));
+    }
+    return 1;
+  };
+  const frame = $(".gen-frame", gen), busyImg = $(".gen-busy", gen), finalImg = $(".gen-final", gen);
+  const promptEl = $(".gen-prompt", gen), go = $(".gen-go", gen), pctEl = $(".gen-pct", gen);
+  const fx = $("#genFilter"), turb = $("feTurbulence", fx), disp = $("feDisplacementMap", fx), blur = $("feGaussianBlur", fx), funcs = $$("feFuncR, feFuncG, feFuncB", fx);
+  let runs = 0, curve = knots(), loading = false;
   RESULTADOS.forEach((r) => { new Image().src = r.img; });
-  const show = (r) => { img.src = r.img; promptEl.textContent = r.prompt; };
-  show(RESULTADOS[0]);
-  $$(".gen-seg button", gen).forEach((b) => b.addEventListener("click", () => {
-    $$(".gen-seg button", gen).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
-    frame.classList.toggle("is-video", b.dataset.mode === "video");
-  }));
+
+  const apply = (t) => {
+    const haze = smooth(0, 0.3, t), form = smooth(0.1, 0.82, t), grain = smooth(0.7, 1, t);
+    const sd = mix(20, 1.6, 1 - Math.pow(1 - form, 2.2)), k = mix(2.4, 1, form);
+    const warp = (RIPPLE / 100) * 32 * Math.pow(1 - smooth(0.05, 0.9, t), 1.5);
+    const f = 0.006 + 0.0018 * Math.sin(t * 4.4), cut = (PAPER - PAPER * k).toFixed(3);
+    if (!reduce) {
+      turb.setAttribute("baseFrequency", `${f.toFixed(4)} ${(f * 1.3).toFixed(4)}`);
+      disp.setAttribute("scale", warp.toFixed(2)); blur.setAttribute("stdDeviation", sd.toFixed(2));
+      funcs.forEach((fn) => { fn.setAttribute("slope", k.toFixed(3)); fn.setAttribute("intercept", cut); });
+      busyImg.style.opacity = haze * mix(0.7, 1, form);
+      busyImg.style.transform = `scale(${mix(1.04, 1, smooth(0, 0.9, t)).toFixed(4)})`;
+    }
+    finalImg.style.opacity = reduce ? t : grain;
+    finalImg.style.filter = reduce ? "" : `blur(${mix(1.6, 0, grain).toFixed(2)}px)`;
+    pctEl.textContent = Math.min(99, Math.floor(along(curve, t) * 100)) + "%";
+  };
   const typeText = (txt) => new Promise((res) => {
+    promptEl.classList.remove("is-empty");
     if (reduce) { promptEl.textContent = txt; return res(); }
     let i = 0; promptEl.textContent = "";
     const id = setInterval(() => { promptEl.textContent = txt.slice(0, ++i); if (i >= txt.length) { clearInterval(id); res(); } }, 22);
   });
+
+  $$(".gen-seg button", gen).forEach((b) => b.addEventListener("click", () => {
+    $$(".gen-seg button", gen).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+    frame.classList.toggle("is-video", b.dataset.mode === "video");
+  }));
+
   go.addEventListener("click", async () => {
-    n = (n + 1) % RESULTADOS.length; const r = RESULTADOS[n];
-    go.disabled = true; go.textContent = "Generando…"; frame.setAttribute("aria-busy", "true");
+    if (loading) return;
+    loading = true; go.disabled = true; go.textContent = "Generando…";
+    const r = RESULTADOS[runs++ % RESULTADOS.length];
+    frame.classList.remove("is-made"); frame.classList.add("is-loading"); frame.setAttribute("aria-busy", "true");
+    finalImg.style.opacity = 0; busyImg.style.opacity = 0; finalImg.alt = "";   /* cada vez se rehace desde cero */
     await typeText(r.prompt);
-    frame.classList.add("is-loading");
-    await new Promise((res) => setTimeout(res, reduce ? 300 : 1600));
-    img.src = r.img;
-    frame.classList.remove("is-loading"); frame.removeAttribute("aria-busy");
-    go.disabled = false; go.textContent = "Generar otra";
+    busyImg.src = finalImg.src = r.img;
+    await Promise.all([busyImg.decode(), finalImg.decode()]).catch(() => {});
+    curve = knots(); apply(0);
+    busyImg.style.filter = reduce ? "" : "url(#genFilter)";
+    const total = reduce ? 400 : PACE * 1000;
+    await new Promise((res) => {
+      let t0 = 0;
+      const tick = (now) => {
+        if (!t0) t0 = now;
+        const v = Math.min(1, (now - t0) / total);
+        apply(v);
+        if (v < 1) requestAnimationFrame(tick); else res();
+      };
+      requestAnimationFrame(tick);
+    });
+    busyImg.style.opacity = 0; busyImg.style.filter = "";
+    finalImg.style.opacity = 1; finalImg.style.filter = ""; finalImg.alt = "Resultado de ejemplo generado";
+    pctEl.textContent = "100%"; frame.classList.add("is-made");
+    setTimeout(() => {   /* el 100 se sostiene un instante para que se vea */
+      frame.classList.remove("is-loading"); frame.removeAttribute("aria-busy");
+      loading = false; go.disabled = false; go.textContent = "Generar otra";
+    }, 650);
   });
+}
+
+/* ───────── Luz que sigue al cursor (solo en Servicios) ───────── */
+const sec = $(".servicios");
+if (sec && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+  const loop = () => {
+    cx += (tx - cx) * 0.18; cy += (ty - cy) * 0.18;
+    sec.style.setProperty("--mx", cx + "px"); sec.style.setProperty("--my", cy + "px");
+    raf = Math.abs(tx - cx) + Math.abs(ty - cy) > 0.5 ? requestAnimationFrame(loop) : 0;
+  };
+  sec.addEventListener("pointermove", (e) => {
+    const b = sec.getBoundingClientRect(); tx = e.clientX - b.left; ty = e.clientY - b.top;
+    if (!sec.classList.contains("is-lit")) { cx = tx; cy = ty; sec.classList.add("is-lit"); }
+    if (!raf) raf = requestAnimationFrame(loop);
+  });
+  sec.addEventListener("pointerleave", () => sec.classList.remove("is-lit"));
 }

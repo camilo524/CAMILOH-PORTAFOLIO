@@ -236,13 +236,6 @@
   text-shadow: 0 1px 0 rgba(247,241,225,.5);
   margin-bottom: .5rem;
 }
-.portfolio .bento-head {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: end;
-  gap: 8px 40px;
-}
-.portfolio .bento-sub { margin-bottom: .7rem; }
 .bento-sub {
   max-width: 34rem;
   font-size: 1rem;
@@ -302,7 +295,7 @@
   transition: transform 1s cubic-bezier(.2,.7,.2,1);
 }
 .folio-card:hover .folio-img img { transform: scale(1.06); }
-/* pie flotante: radio interno = radio de la tarjeta − margen (28 − 12) */
+/* pie flotante: radio interno = radio de la tarjeta − margen (32 − 12) */
 .folio-meta {
   position: absolute;
   left: 12px; right: 12px; bottom: 12px;
@@ -311,7 +304,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 14px 12px 18px;
-  border-radius: 16px;
+  border-radius: 20px;
   background: var(--paper-glass);
   border: 1px solid rgba(255,255,255,.6);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
@@ -343,13 +336,16 @@
   margin: clamp(24px, 3vw, 40px) auto 0;
 }
 .bento-cta .btn-ghost {
-  color: var(--ink);
-  background: var(--paper-glass);
-  border-color: rgba(26,31,46,.18);
+  color: var(--paper);
+  background: #1a1f2e;
+  border-color: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .bento-cta .btn-ghost:hover {
-  background: rgba(247,241,225,.85);
-  border-color: rgba(26,31,46,.4);
+  background: #1a1f2e;
+  border-color: transparent;
+  box-shadow: 0 12px 28px rgba(26,31,46,.35);
 }
 
 /* ─── Obras + Programas (sección rearmada) ───
@@ -456,11 +452,9 @@
   width: 100%;
   padding: clamp(24px, 3vw, 36px) clamp(20px, 2.5vw, 32px);
   border-radius: var(--radius-xl);
-  background: linear-gradient(158deg, rgba(247,241,225,.72) 0%, rgba(247,241,225,.44) 100%);
-  border: 1px solid rgba(255,255,255,.6);
-  box-shadow: 0 24px 54px rgba(16,40,110,.16), inset 0 1px 0 rgba(255,255,255,.7);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  background: #EADFFF;
+  border: 0;
+  box-shadow: none;
   text-align: left;
   box-sizing: border-box;
 }
@@ -624,13 +618,15 @@
   align-items: center;
   text-align: left;
   overflow: hidden;
-  background: linear-gradient(158deg, rgba(247,241,225,.74) 0%, rgba(247,241,225,.46) 100%);
-  border: 1px solid rgba(255,255,255,.6);
+  color: var(--paper);
+  background:
+    radial-gradient(760px 420px at 92% -10%, rgba(80,120,255,.38), transparent 60%),
+    radial-gradient(640px 420px at 0% 110%, rgba(124,92,255,.28), transparent 60%),
+    var(--navy);
+  border: 0;
   border-radius: var(--radius-xl);
   padding: clamp(32px, 5vw, 64px);
-  box-shadow: 0 28px 60px rgba(16,40,110,.18), inset 0 1px 0 rgba(255,255,255,.7);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
 }
 .prologue-title {
   grid-area: title;
@@ -641,14 +637,14 @@
   line-height: 1;
   letter-spacing: -.02em;
   margin: 0;
-  color: var(--ink);
+  color: var(--paper);
 }
 .prologue-text {
   grid-area: text;
   position: relative;
   font-size: 1.02rem;
   line-height: 1.75;
-  color: var(--ink-soft);
+  color: rgba(247,241,225,.82);
   margin: 0;
 }
 .prologue-actions {
@@ -658,28 +654,8 @@
   flex-wrap: wrap;
   gap: 14px;
 }
-.prologue-actions .btn-primary {
-  background: var(--brand);
-  color: #fff;
-  box-shadow: 0 10px 28px rgba(16,54,193,.3);
-}
-.prologue-actions .btn-primary:hover {
-  background: #0b2597;
-  box-shadow: 0 14px 34px rgba(16,54,193,.4);
-}
-.prologue-actions .btn-ghost {
-  color: var(--brand);
-  background: var(--paper);
-  border: 1.5px solid rgba(16,54,193,.24);
-}
-.prologue-actions .btn-ghost:hover {
-  background: #FBF6E8;
-  border-color: rgba(16,54,193,.5);
-}
-
 /* ─── Responsive de secciones ─── */
 @media (max-width: 900px) {
-  .portfolio .bento-head { grid-template-columns: 1fr; }
   .prologue-inner {
     grid-template-columns: 1fr;
     grid-template-areas: "title" "text" "actions";

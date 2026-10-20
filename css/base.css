@@ -19,6 +19,8 @@
   --sky-bot: #CFE7F7;
   --paper: #F7F1E1;           /* crema: reemplaza al blanco puro */
   --paper-deep: #EFE5CC;
+  --navy: #0B1C52;            /* azul del panel Servicios */
+  --navy-2: #132b7c;
   --paper-glass: rgba(247,241,225,.62);
   --ink: #1a1f2e;
   --ink-soft: #2c3347;
@@ -33,8 +35,8 @@
 
   /* Radios */
   --radius: 18px;
-  --radius-lg: 28px;
-  --radius-xl: 34px;
+  --radius-lg: 32px;
+  --radius-xl: 36px;
 
   /* Espaciado (progresión áurea ≈ φ) */
   --sp-1: .5rem;
@@ -58,7 +60,7 @@ html { scroll-behavior: smooth; background: #0b1a2e; }
 body {
   min-height: 100vh;
   color: var(--ink);
-  font-family: var(--serif);
+  font-family: var(--inter);
   overflow-x: hidden;
   cursor: none;
   background: #0b1a2e;
@@ -377,7 +379,9 @@ nav.is-open .nav-toggle span:nth-child(3) { transform: translateY(-6.5px) rotate
   margin: 0 auto;
   padding: 32px 36px;
   border-radius: 24px;
-  background: rgba(26,31,46,.86);
+  background:
+    radial-gradient(700px 380px at 90% -20%, rgba(80,120,255,.32), transparent 60%),
+    linear-gradient(160deg, var(--navy-2) 0%, var(--navy) 100%);
   border: 1.5px solid rgba(247,241,225,.12);
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
