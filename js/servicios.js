@@ -376,10 +376,9 @@ if (cmp) {
    (muy borrosa y con contraste), luego la forma y, al final, el grano nítido.
    Cambia RESULTADOS por tus generaciones reales con IA (imagen + prompt). */
 const RESULTADOS = [
-  { img: "https://media.camiloh.co/PALOMA%20MAMI/cover.webp", prompt: "Personaje estilizado, luz de estudio, fondo pastel" },
-  { img: "https://media.camiloh.co/MINISO%20NAVIDAD/cover.webp", prompt: "Producto flotando entre humo suave, estética publicitaria" },
-  { img: "https://media.camiloh.co/LATE%20DEL%20SUR/cover.webp", prompt: "Escena de videoclip, luz de neón, cámara lenta" },
-  { img: "https://media.camiloh.co/CLUB%20COLOMBIA/cover.webp", prompt: "Paisaje al atardecer, cielo cálido, look cinematográfico" },
+  { img: "https://media.camiloh.co/CLUBCOLOMBIA/cover.webp", prompt: "Diorama 3D cutout, colonial town, papercraft art style, warm lighting." },
+  { img: "https://media.camiloh.co/LATEDELSUR/01.webp", prompt: "3D Pixar character, capybara archer, dramatic stadium lighting, octane render." },
+  { img: "https://media.camiloh.co/RUTINARIO/cover.webp", prompt: "Stylized 3D character render, exhausted businessman, cinematic interior, Octane." },
 ];
 const gen = $("[data-gen]");
 if (gen) {
