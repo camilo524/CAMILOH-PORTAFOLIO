@@ -367,7 +367,7 @@
       "title": "Club Colombia",
       "year": "2026",
       "slug": "club-colombia",
-      "folder": "CLUB COLOMBIA",
+      "folder": "CLUBCOLOMBIA",
       "cat": "ia",
       "role": {
         "es": "Artista de IA",
@@ -943,7 +943,7 @@
       "title": "Late del Sur",
       "year": "2026",
       "slug": "late-del-sur",
-      "folder": "LATE DEL SUR",
+      "folder": "LATEDELSUR",
       "cat": "ia",
       "role": {
         "es": "Artista de IA",
@@ -1584,7 +1584,7 @@
       "title": "Paloma Mami",
       "year": "2025",
       "slug": "paloma-mami",
-      "folder": "PALOMA MAMI",
+      "folder": "PALOMAMI",
       "role": {
         "es": "Generalista 3D",
         "en": "3D generalist"
