@@ -2,6 +2,8 @@
    Camiloh — Index
    Birds · cursor · sunset · nav · portfolio · lightbox
    Optimizado con IntersectionObserver (videos, marquee, animaciones)
+   Aves con parallax inercial (sin saltos al scroll) y atardecer
+   sin repintadas innecesarias mientras se scrollea
 ═══════════════════════════════════════════════ */
 
 (function () {
@@ -10,6 +12,22 @@
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hasIO = "IntersectionObserver" in window;
   let onToolsToggle = null; /* lo asigna el bloque "obras: igualar alto" más abajo */
+
+  /* scrollbar: el tono evoluciona de azul a coral conforme avanza la página */
+  const root = document.documentElement;
+  let scrollbarRaf = 0;
+  const updateScrollbarHue = () => {
+    scrollbarRaf = 0;
+    const scrollable = root.scrollHeight - window.innerHeight;
+    const progress = scrollable > 0 ? Math.max(0, Math.min(window.scrollY / scrollable, 1)) : 0;
+    root.style.setProperty("--scroll-hue", `${(200 + progress * 178).toFixed(1)}deg`);
+  };
+  const scheduleScrollbarHue = () => {
+    if (!scrollbarRaf) scrollbarRaf = requestAnimationFrame(updateScrollbarHue);
+  };
+  window.addEventListener("scroll", scheduleScrollbarHue, { passive: true });
+  window.addEventListener("resize", scheduleScrollbarHue, { passive: true });
+  updateScrollbarHue();
 
   /* ---------- custom cursor ---------- */
   const cursor = document.getElementById("cursor");
@@ -58,6 +76,7 @@
     const rgb = (c, a) => "rgba(" + c.join(",") + "," + a + ")";
 
     function sunsetAmount() {
+      return 0;   /* atardecer desactivado: el cielo se queda celeste */
       let t;
       if (footer) {
         const top = footer.getBoundingClientRect().top;
@@ -120,7 +139,10 @@
 
     paint();
 
-    window.addEventListener("scroll", schedule, { passive: true });
+    /* El atardecer está desactivado (sunsetAmount() = 0): el scroll no altera
+       ningún gradiente, así que repintar en cada frame de scroll era puro
+       coste (una de las causas de los tirones). Solo se repinta al mover el
+       cursor o al cambiar el tamaño. */
     window.addEventListener("resize", () => {
       w = window.innerWidth;
       h = window.innerHeight;
@@ -174,7 +196,7 @@
     let running = false;
 
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       logicalW = window.innerWidth;
       logicalH = window.innerHeight;
       canvas.width = Math.floor(logicalW * dpr);
@@ -198,14 +220,27 @@
         turnSeed: Math.random() * 5000,
         opacity: 0.28 + Math.random() * 0.55,
       });
+      /* profundidad: las más grandes están más cerca y se mueven más con el scroll */
+      const bd = birds[birds.length - 1];
+      bd.depth = 0.3 + ((bd.size - 1.2) / 3.2) * 0.7;
+      bd.x = Math.random() * logicalW;
+      bd.y = 20 + Math.random() * (logicalH - 40);
     }
+    let lastScroll = window.scrollY;
+    /* parallax acoplado al scroll: el delta real se aplica en el mismo frame,
+       así las aves viajan exactamente al ritmo de la página (sin rebote) */
+    const DY_MAX = 240;      /* tope por frame (flicks violentos) */
+    /* el bando crece al bajar: nuevas aves emergen desde abajo, en fundido */
+    const SPAWN_STEP = 700;  /* cada N px de scroll generamos más aves */
+    const SPAWN_PER_STEP = 6;
+    const SPAWN_MAX = 36;
 
     function drawBird(b, time) {
       const wing = Math.sin(b.flap) * b.size * 0.9;
       ctx.save();
       ctx.translate(b.x, b.y);
       ctx.rotate(Math.sin(time * 0.00012 + b.turnSeed) * 0.25);
-      ctx.strokeStyle = `rgba(25, 25, 25, ${b.opacity})`;
+      ctx.strokeStyle = `rgba(25, 25, 25, ${(b.alpha ?? 1) * b.opacity})`;
       ctx.lineWidth = 1.2;
       ctx.lineCap = "round";
       ctx.beginPath();
@@ -219,13 +254,48 @@
     function animate(time) {
       if (!running) return;
       ctx.clearRect(0, 0, logicalW, logicalH);
+      /* al desplazarse, las aves viajan con la página (parallax) y las que salen se
+         regeneran por el lado contrario: abajo si bajas, arriba si subes */
+      const clampDy = (n, a, b) => Math.min(b, Math.max(a, n));
+      const raw = clampDy(window.scrollY - lastScroll, -DY_MAX, DY_MAX);
+      lastScroll = window.scrollY;
+      const target = Math.min(
+        COUNT + SPAWN_MAX,
+        COUNT + Math.floor(Math.max(0, window.scrollY) / SPAWN_STEP) * SPAWN_PER_STEP
+      );
+      while (birds.length < target) {
+        const size = 1.2 + Math.random() * 3.2;
+        birds.push({
+          x: Math.random() * logicalW,
+          y: logicalH + 10 + Math.random() * 120,
+          size,
+          speed: 0.15 + Math.random() * 0.45,
+          flap: Math.random() * Math.PI * 2,
+          flapSpeed: 0.08 + Math.random() * 0.15,
+          driftSeed: Math.random() * 5000,
+          turnSeed: Math.random() * 5000,
+          opacity: 0.28 + Math.random() * 0.55,
+          depth: 0.3 + ((size - 1.2) / 3.2) * 0.7,
+          alpha: 0,
+        });
+      }
       birds.forEach((b) => {
         b.flap += b.flapSpeed;
         b.x += b.speed;
-        b.y += Math.sin(time * 0.0006 + b.driftSeed) * 0.18;
+        b.y += Math.sin(time * 0.0006 + b.driftSeed) * 0.18 - raw * b.depth;
+        if (b.alpha < 1) b.alpha = Math.min(1, b.alpha + 0.03);
+        if (b.y < -30) {
+          b.y = logicalH + 10 + Math.random() * 90;
+          b.x = Math.random() * logicalW;
+          b.speed = 0.15 + Math.random() * 0.45;
+        } else if (b.y > logicalH + 120) {
+          b.y = -10 - Math.random() * 90;
+          b.x = Math.random() * logicalW;
+          b.speed = 0.15 + Math.random() * 0.45;
+        }
         if (b.x > logicalW + 24) {
           b.x = -24 - Math.random() * 80;
-          b.y = 40 + Math.random() * (logicalH * 0.7);
+          b.y = 30 + Math.random() * (logicalH - 60);
           b.speed = 0.15 + Math.random() * 0.45;
         }
         drawBird(b, time);
@@ -251,7 +321,7 @@
       startBirds();
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) stopBirds();
-        else startBirds();
+        else { lastScroll = window.scrollY; startBirds(); }
       });
     }
   }
@@ -392,7 +462,7 @@
       if (!mq.matches || !fixedTarget) return;
       toolsPanel.style.removeProperty("padding-bottom");
       void toolsPanel.offsetHeight;
-      const natural = toolsPanel.getBoundingClientRect().height;
+      const natural = toolsPanel.offsetHeight;
       const basePad = parseFloat(getComputedStyle(toolsPanel).paddingBottom) || 0;
       const extra = Math.max(0, fixedTarget - natural);
       toolsPanel.style.paddingBottom = (basePad + extra) + "px";
@@ -407,7 +477,7 @@
       const openSkills = toolsPanel.querySelectorAll(".tool-skills.open");
       openSkills.forEach((el) => el.classList.remove("open"));
       void toolsPanel.offsetHeight;
-      const targetHeight = toolsPanel.getBoundingClientRect().height;
+      const targetHeight = toolsPanel.offsetHeight;
       openSkills.forEach((el) => el.classList.add("open"));
 
       const toolsWidth = toolsSide.getBoundingClientRect().width;

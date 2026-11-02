@@ -403,7 +403,7 @@ if (gen) {
   const promptEl = $(".gen-prompt", gen), go = $(".gen-go", gen), pctEl = $(".gen-pct", gen);
   const fx = $("#genFilter"), turb = $("feTurbulence", fx), disp = $("feDisplacementMap", fx), blur = $("feGaussianBlur", fx), funcs = $$("feFuncR, feFuncG, feFuncB", fx);
   let runs = 0, curve = knots(), loading = false;
-  RESULTADOS.forEach((r) => { new Image().src = r.img; });
+  whenVisible(gen, () => { new Image().src = RESULTADOS[0].img; }, "200px");
 
   const apply = (t) => {
     const haze = smooth(0, 0.3, t), form = smooth(0.1, 0.82, t), grain = smooth(0.7, 1, t);
