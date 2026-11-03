@@ -554,3 +554,44 @@ nav { animation: veilFadeIn .8s var(--ease-out) 1.05s both; }
   outline-offset: 3px;
 }
 nav :where(a, button):focus-visible { outline-color: var(--navy); }
+
+/* ─── Nav en pastilla (mismo patrón que la página de trabajos) ───
+   Los enlaces viven en una sola pastilla de vidrio centrada; aquí el
+   vidrio se aclara un poco para no apagar el cielo del hero. */
+@media (min-width: 861px) {
+  nav ul {
+    gap: 4px;
+    padding: 6px;
+    border-radius: 999px;
+    background:
+      linear-gradient(165deg, rgba(255,255,255,.12), rgba(255,255,255,.03) 46%, transparent 100%),
+      rgba(14,20,36,.34);
+    border: 1.5px solid rgba(255,255,255,.34);
+    backdrop-filter: blur(16px) saturate(165%);
+    -webkit-backdrop-filter: blur(16px) saturate(165%);
+    box-shadow: 0 12px 30px rgba(8,24,90,.24), inset 0 1px 0 rgba(255,255,255,.26);
+  }
+  nav ul a {
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-family: var(--mono);
+    font-size: .66rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--paper);
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    transition: color .4s ease, box-shadow .4s ease;
+  }
+  nav ul a:hover,
+  nav ul a.active {
+    transform: none;
+    color: var(--paper);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: 0 0 26px 2px var(--nc-glow), inset 0 0 12px rgba(255,255,255,.10);
+  }
+  nav ul a:active { transform: scale(.97); }
+}

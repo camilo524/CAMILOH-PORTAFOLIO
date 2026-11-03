@@ -226,10 +226,16 @@
       bd.x = Math.random() * logicalW;
       bd.y = 20 + Math.random() * (logicalH - 40);
     }
-    let lastScroll = window.scrollY;
-    /* parallax acoplado al scroll: el delta real se aplica en el mismo frame,
-       así las aves viajan exactamente al ritmo de la página (sin rebote) */
-    const DY_MAX = 240;      /* tope por frame (flicks violentos) */
+    /* El navegador entrega el scroll en pasos (rueda, trackpad, inercia), así que
+       aplicar el delta tal cual hacía que el bando diera tirones secos en cada
+       frame. Ahora seguimos el scroll con un suavizado exponencial: las aves
+       acompañan el ritmo de la página, pero el desplazamiento se reparte entre
+       varios frames y se percibe continuo. */
+    let scrollSmooth = window.scrollY;
+    let scrollPrev = scrollSmooth;
+    const SCROLL_EASE = 0.12;  /* 0 = no se mueve · 1 = sin suavizado */
+    const SCROLL_EPS = 0.05;   /* cierra el resto para no dejar micro-deriva */
+    const DY_MAX = 240;        /* tope por frame (flicks violentos) */
     /* el bando crece al bajar: nuevas aves emergen desde abajo, en fundido */
     const SPAWN_STEP = 700;  /* cada N px de scroll generamos más aves */
     const SPAWN_PER_STEP = 6;
@@ -257,8 +263,10 @@
       /* al desplazarse, las aves viajan con la página (parallax) y las que salen se
          regeneran por el lado contrario: abajo si bajas, arriba si subes */
       const clampDy = (n, a, b) => Math.min(b, Math.max(a, n));
-      const raw = clampDy(window.scrollY - lastScroll, -DY_MAX, DY_MAX);
-      lastScroll = window.scrollY;
+      scrollSmooth += (window.scrollY - scrollSmooth) * SCROLL_EASE;
+      if (Math.abs(window.scrollY - scrollSmooth) < SCROLL_EPS) scrollSmooth = window.scrollY;
+      const raw = clampDy(scrollSmooth - scrollPrev, -DY_MAX, DY_MAX);
+      scrollPrev = scrollSmooth;
       const target = Math.min(
         COUNT + SPAWN_MAX,
         COUNT + Math.floor(Math.max(0, window.scrollY) / SPAWN_STEP) * SPAWN_PER_STEP
@@ -288,10 +296,12 @@
           b.y = logicalH + 10 + Math.random() * 90;
           b.x = Math.random() * logicalW;
           b.speed = 0.15 + Math.random() * 0.45;
+          b.alpha = 0;  /* reaparece en fundido: sin pop al dar la vuelta */
         } else if (b.y > logicalH + 120) {
           b.y = -10 - Math.random() * 90;
           b.x = Math.random() * logicalW;
           b.speed = 0.15 + Math.random() * 0.45;
+          b.alpha = 0;
         }
         if (b.x > logicalW + 24) {
           b.x = -24 - Math.random() * 80;
@@ -321,7 +331,7 @@
       startBirds();
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) stopBirds();
-        else { lastScroll = window.scrollY; startBirds(); }
+        else { scrollSmooth = scrollPrev = window.scrollY; startBirds(); }
       });
     }
   }
@@ -478,8 +488,6 @@
       openSkills.forEach((el) => el.classList.remove("open"));
       void toolsPanel.offsetHeight;
       const targetHeight = toolsPanel.offsetHeight;
-      openSkills.forEach((el) => el.classList.add("open"));
-
       const toolsWidth = toolsSide.getBoundingClientRect().width;
       if (!targetHeight || !toolsWidth) return;
 
