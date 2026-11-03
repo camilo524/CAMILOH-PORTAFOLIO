@@ -488,6 +488,8 @@
       openSkills.forEach((el) => el.classList.remove("open"));
       void toolsPanel.offsetHeight;
       const targetHeight = toolsPanel.offsetHeight;
+      openSkills.forEach((el) => el.classList.add("open"));
+
       const toolsWidth = toolsSide.getBoundingClientRect().width;
       if (!targetHeight || !toolsWidth) return;
 
